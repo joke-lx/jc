@@ -31,9 +31,9 @@ export interface ProcessManager {
 export class WinProcessManager implements ProcessManager {
   async getListeningPorts(): Promise<ProcessInfo[]> {
     const data = await si.networkConnections()
-    return data
-      .filter(c => c.state === 'listen')
-      .map(c => ({
+    const listenEntries = data && data.length > 0 ? data.filter(c => c.state === 'listen') : []
+    if (listenEntries.length > 0) {
+      return listenEntries.map(c => ({
         pid: c.pid,
         name: '',
         cpu: 0,
@@ -41,13 +41,48 @@ export class WinProcessManager implements ProcessManager {
         port: c.localPort,
         state: c.state,
       }))
+    }
+    // Fallback: parse netstat output
+    if (process.platform === 'win32') {
+      try {
+        const output = execSync('netstat -ano', { encoding: 'utf8', timeout: 5000 })
+        return output.split('\n')
+          .filter(l => l.includes('LISTENING'))
+          .map(l => {
+            const parts = l.trim().split(/\s+/)
+            const addr = parts[1] || ''
+            const port = parseInt(addr.split(':').pop() || '', 10)
+            const pid = parseInt(parts[parts.length - 1], 10)
+            return { pid: isNaN(pid) ? 0 : pid, name: '', cpu: 0, memory: 0, port: isNaN(port) ? undefined : port, state: 'listen' }
+          })
+          .filter(p => p.port !== undefined && p.pid > 0)
+      } catch { /* ignore */ }
+    }
+    return []
   }
 
   async getProcessByPort(port: number): Promise<ProcessInfo[]> {
-    const conns = await si.networkConnections()
-    const matches = conns.filter(c => c.localPort === port && c.state === 'listen')
+    let conns = await si.networkConnections()
+    if (!conns || conns.length === 0 || !conns.some((c: any) => c.state === 'listen')) {
+      // Fallback: parse netstat output for Windows
+      if (process.platform === 'win32') {
+        try {
+          const output = execSync('netstat -ano', { encoding: 'utf8', timeout: 5000 })
+          conns = output.split('\n')
+            .filter(l => l.includes('LISTENING'))
+            .map(l => {
+              const parts = l.trim().split(/\s+/)
+              const addr = parts[1] || ''
+              const localPort = parseInt(addr.split(':').pop() || '', 10)
+              const pid = parseInt(parts[parts.length - 1], 10)
+              return { localPort, pid, state: 'listen' } as any
+            })
+        } catch { /* ignore */ }
+      }
+    }
+    const matches = conns.filter((c: any) => c.localPort === port && c.state === 'listen')
     if (matches.length === 0) return []
-    return Promise.all(matches.map(async (m) => {
+    return Promise.all(matches.map(async (m: any) => {
       const proc = await this.getProcessInfo(m.pid)
       return { ...proc, port: m.localPort }
     }))
@@ -96,9 +131,9 @@ export class WinProcessManager implements ProcessManager {
     const processes = await si.processes()
     return {
       total: processes.all,
-      running: processes.running,
-      cpuPercent: processes.cpu,
-      memoryGB: Math.round(processes.mem / (1024 * 1024 * 1024) * 10) / 10,
+      running: processes.running || processes.all,
+      cpuPercent: Math.round((typeof processes.cpu === 'number' ? processes.cpu : 0) * 10) / 10,
+      memoryGB: Math.round(((typeof (processes as any).mem === 'number' ? (processes as any).mem : 0) / (1024 * 1024 * 1024)) * 10) / 10,
     }
   }
 

@@ -7,6 +7,10 @@ export async function handler(args: string[]): Promise<void> {
   if (args.length === 0) {
     const ports = await pm.getListeningPorts()
     console.log('监听端口列表:')
+    if (ports.length === 0) {
+      console.log('无监听的端口')
+      return
+    }
     console.table(ports.map(p => ({ PID: p.pid, Port: p.port, State: p.state })))
     return
   }
