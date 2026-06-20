@@ -47,6 +47,9 @@ jobs:
           git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.tag }}"
           git push origin "${{ steps.version.outputs.tag }}"
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Check if version exists on npm
         id: npm_check
         run: |
