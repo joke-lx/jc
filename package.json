@@ -1,0 +1,31 @@
+{
+  "name": "jc",
+  "version": "0.1.0",
+  "description": "j 命令套件 — 跨平台系统快捷命令集",
+  "type": "module",
+  "bin": {
+    "jc": "dist/index.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "open": "^10.1.0",
+    "pidusage": "^3.0.2",
+    "systeminformation": "^5.25.11"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/pidusage": "^2.0.5",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  },
+  "license": "MIT"
+}
