@@ -73,8 +73,11 @@ export async function route(argv: string[]): Promise<void> {
     return
   }
 
-  // Find command in group
-  const cmd = group.commands.find(c => c.name === parsed.command || c.alias?.includes(parsed.command))
+  // Find command in group or categories
+  const allCmds = group.categories
+    ? group.categories.flatMap(c => c.commands).concat(group.commands)
+    : group.commands
+  const cmd = allCmds.find(c => c.name === parsed.command || c.alias?.includes(parsed.command))
   if (cmd) {
     // Check for help flag
     if (parsed.args[0] === '?' || parsed.args[0] === '-h' || parsed.args[0] === '--help') {
