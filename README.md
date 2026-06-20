@@ -41,8 +41,8 @@ jc w ?                # 命令帮助
 
 | 组 | 别名 | 说明 | 命令数 |
 |----|------|------|--------|
-| claude | c | Claude Code CLI 包装 | 5 |
-| happy | hy | Happy mobile Claude 包装 | 8 |
+| claude | c | Claude Code CLI 包装 | 4 |
+| happy | hy | Happy mobile Claude 包装 | 7 |
 | w | w | 系统快捷命令集 | 87 |
 
 ## w 组 11 个类别
@@ -63,7 +63,7 @@ jc w ?                # 命令帮助
 
 ## 跨平台
 
-- **Windows**: 全部 100 命令完整支持
+- **Windows**: 全部 98 命令完整支持
 - **macOS / Linux**: 核心命令支持（~80%），注册表/WSL/WiFi密码等 Windows 特有命令会提示"此命令仅支持 Windows"
 
 ## 构建
