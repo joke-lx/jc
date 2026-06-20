@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
+import { route } from './cli/router.js'
+
 async function main() {
-  console.log('jc: j 命令套件')
+  const args = process.argv.slice(2)
+  await route(args)
 }
 
 main().catch((err) => {
