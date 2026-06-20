@@ -1,6 +1,6 @@
 import { spawn } from 'child_process'
 
-export async function handler(_args: string[]) {
+export async function handler(_args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
     const child = spawn('happy', ['doctor'], { stdio: 'inherit', shell: true })
     child.on('close', (c) => c === 0 ? resolve() : reject(new Error(`exit ${c}`)))

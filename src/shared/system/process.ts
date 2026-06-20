@@ -38,7 +38,7 @@ export class WinProcessManager implements ProcessManager {
         name: '',
         cpu: 0,
         memory: 0,
-        port: c.localPort,
+        port: Number(c.localPort) || undefined,
         state: c.state,
       }))
     }
@@ -128,12 +128,16 @@ export class WinProcessManager implements ProcessManager {
   }
 
   async getProcessStats(): Promise<ProcessStats> {
-    const processes = await si.processes()
+    const [processes, load, mem] = await Promise.all([
+      si.processes(),
+      si.currentLoad(),
+      si.mem(),
+    ])
     return {
       total: processes.all,
       running: processes.running || processes.all,
-      cpuPercent: Math.round((typeof processes.cpu === 'number' ? processes.cpu : 0) * 10) / 10,
-      memoryGB: Math.round(((typeof (processes as any).mem === 'number' ? (processes as any).mem : 0) / (1024 * 1024 * 1024)) * 10) / 10,
+      cpuPercent: Math.round((load.currentLoad ?? 0) * 10) / 10,
+      memoryGB: Math.round(((mem.used ?? 0) / (1024 * 1024 * 1024)) * 10) / 10,
     }
   }
 

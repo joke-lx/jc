@@ -51,9 +51,35 @@ export class SystemNetworkManager implements NetworkManager {
   }
 
   private async getDnsServers(): Promise<string[]> {
+    if (process.platform === 'win32') {
+      try {
+        const output = execSync('ipconfig /all', { encoding: 'utf8' })
+        const servers: string[] = []
+        const re = /DNS Servers\s*\.+\s*:\s*([0-9.]+)/
+        const lines = output.split('\n')
+        for (let i = 0; i < lines.length; i++) {
+          const m = lines[i].match(re)
+          if (m) {
+            servers.push(m[1].trim())
+            // Continuation lines: indented IPs on following lines
+            for (let j = i + 1; j < lines.length; j++) {
+              const cont = lines[j].trim()
+              if (/^[0-9.]+$/.test(cont)) servers.push(cont)
+              else break
+            }
+          }
+        }
+        return servers
+      } catch {
+        return []
+      }
+    }
     try {
-      const dns = await si.dns()
-      return dns.nameservers || []
+      const output = execSync('cat /etc/resolv.conf 2>/dev/null || true', { encoding: 'utf8' })
+      return output.split('\n')
+        .map(l => l.match(/^nameserver\s+(\S+)/i))
+        .filter((m): m is RegExpMatchArray => !!m)
+        .map(m => m[1])
     } catch {
       return []
     }
@@ -64,9 +90,9 @@ export class SystemNetworkManager implements NetworkManager {
       const networks = await si.wifiConnections()
       return (networks || []).map(n => ({
         ssid: n.ssid || '',
-        signal: n.signal || 0,
-        frequency: n.frequency || '',
-        channel: n.channel || 0,
+        signal: n.signalLevel ?? 0,
+        frequency: n.frequency != null ? String(n.frequency) : '',
+        channel: n.channel ?? 0,
         security: n.security || '',
       }))
     } catch {
@@ -122,8 +148,8 @@ export class SystemNetworkManager implements NetworkManager {
   async getConnections(): Promise<{ localPort: number; remotePort: number; state: string; pid: number }[]> {
     const data = await si.networkConnections()
     return (data || []).map(c => ({
-      localPort: c.localPort,
-      remotePort: c.remotePort,
+      localPort: Number(c.localPort) || 0,
+      remotePort: Number(c.peerPort) || 0,
       state: c.state,
       pid: c.pid,
     }))
