@@ -49,6 +49,52 @@ import { commandDef as findCmd } from './file/find.js'
 import { commandDef as sizeCmd } from './file/size.js'
 import { commandDef as dtreeCmd } from './file/dtree.js'
 import { commandDef as lnCmd } from './file/ln.js'
+// svc category
+import { commandDef as svcCmd } from './svc/svc.js'
+import { commandDef as svcstartCmd } from './svc/svcstart.js'
+import { commandDef as svcstopCmd } from './svc/svcstop.js'
+import { commandDef as svcrestartCmd } from './svc/svcrestart.js'
+import { commandDef as svcdelayedCmd } from './svc/svcdelayed.js'
+// pwr category
+import { commandDef as offCmd } from './pwr/off.js'
+import { commandDef as rebootCmd } from './pwr/reboot.js'
+import { commandDef as logoutCmd } from './pwr/logout.js'
+import { commandDef as lockCmd } from './pwr/lock.js'
+import { commandDef as sleepCmd } from './pwr/sleep.js'
+import { commandDef as cancelCmd } from './pwr/cancel.js'
+// reg category
+import { commandDef as regCmd } from './reg/reg.js'
+import { commandDef as regsetCmd } from './reg/regset.js'
+import { commandDef as regdelCmd } from './reg/regdel.js'
+import { commandDef as regfindCmd } from './reg/regfind.js'
+// task category
+import { commandDef as taskCmd } from './task/task.js'
+import { commandDef as taskrunCmd } from './task/taskrun.js'
+import { commandDef as taskstopCmd } from './task/taskstop.js'
+// tools category
+import { commandDef as taskmgrCmd } from './tools/taskmgr.js'
+import { commandDef as resmonCmd } from './tools/resmon.js'
+import { commandDef as perfmonCmd } from './tools/perfmon.js'
+import { commandDef as eventvwrCmd } from './tools/eventvwr.js'
+import { commandDef as devmgmtCmd } from './tools/devmgmt.js'
+import { commandDef as diskmgmtCmd } from './tools/diskmgmt.js'
+import { commandDef as msconfigCmd } from './tools/msconfig.js'
+import { commandDef as regedCmd } from './tools/reged.js'
+import { commandDef as gpeditCmd } from './tools/gpedit.js'
+import { commandDef as controlCmd } from './tools/control.js'
+import { commandDef as servicesCmd } from './tools/services.js'
+import { commandDef as hereCmd } from './tools/here.js'
+import { commandDef as wtCmd } from './tools/wt.js'
+import { commandDef as codeCmd } from './tools/code.js'
+// user category
+import { commandDef as whoCmd } from './user/who.js'
+import { commandDef as usersCmd } from './user/users.js'
+import { commandDef as adminCmd } from './user/admin.js'
+import { commandDef as runasCmd } from './user/runas.js'
+// wsl category
+import { commandDef as wslCmd } from './wsl/wsl.js'
+import { commandDef as wslkillCmd } from './wsl/wslkill.js'
+import { commandDef as dockerCmd } from './wsl/docker.js'
 import type { Group, Category } from '../../cli/types.js'
 
 const procCategory: Category = {
@@ -75,10 +121,52 @@ const fileCategory: Category = {
   commands: [lsCmd, pwdCmd, cdCmd, rmCmd, delCmd, mkdirCmd, touchCmd, cpCmd, mvCmd, findCmd, sizeCmd, dtreeCmd, lnCmd],
 }
 
+const svcCategory: Category = {
+  name: 'svc',
+  description: '服务 (5)',
+  commands: [svcCmd, svcstartCmd, svcstopCmd, svcrestartCmd, svcdelayedCmd],
+}
+
+const pwrCategory: Category = {
+  name: 'pwr',
+  description: '电源 (6)',
+  commands: [offCmd, rebootCmd, logoutCmd, lockCmd, sleepCmd, cancelCmd],
+}
+
+const regCategory: Category = {
+  name: 'reg',
+  description: '注册表 (4)',
+  commands: [regCmd, regsetCmd, regdelCmd, regfindCmd],
+}
+
+const taskCategory: Category = {
+  name: 'task',
+  description: '计划任务 (3)',
+  commands: [taskCmd, taskrunCmd, taskstopCmd],
+}
+
+const toolsCategory: Category = {
+  name: 'tools',
+  description: '系统工具 (14)',
+  commands: [taskmgrCmd, resmonCmd, perfmonCmd, eventvwrCmd, devmgmtCmd, diskmgmtCmd, msconfigCmd, regedCmd, gpeditCmd, controlCmd, servicesCmd, hereCmd, wtCmd, codeCmd],
+}
+
+const userCategory: Category = {
+  name: 'user',
+  description: '用户 (4)',
+  commands: [whoCmd, usersCmd, adminCmd, runasCmd],
+}
+
+const wslCategory: Category = {
+  name: 'wsl',
+  description: 'WSL/Docker (3)',
+  commands: [wslCmd, wslkillCmd, dockerCmd],
+}
+
 export const wGroup: Group = {
   name: 'w',
   alias: 'w',
   description: 'Windows 快捷命令集 / 系统工具',
   commands: [],
-  categories: [procCategory, sysCategory, netCategory, fileCategory],
+  categories: [procCategory, sysCategory, netCategory, fileCategory, svcCategory, pwrCategory, regCategory, taskCategory, toolsCategory, userCategory, wslCategory],
 }
