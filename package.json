@@ -26,5 +26,9 @@
     "vitest": "^2.1.0"
   },
   "author": "joke-lx",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joke-lx/jc.git"
+  }
 }
