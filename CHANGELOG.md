@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/joke-lx/jc/compare/v0.1.1...v0.1.2) (2026-06-21)
+
+
+### Bug Fixes
+
+* **ci:** remove tag creation — release-please already owns this ([491ae89](https://github.com/joke-lx/jc/commit/491ae898a01dedc51ce9746dd311fe7bfb1fbca6))
+
 ## [0.1.1](https://github.com/joke-lx/jc/compare/v0.1.0...v0.1.1) (2026-06-20)
 
 

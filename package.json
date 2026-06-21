@@ -1,6 +1,6 @@
 {
   "name": "je-cd",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "j 命令套件 — 跨平台系统快捷命令集",
   "type": "module",
   "bin": {
