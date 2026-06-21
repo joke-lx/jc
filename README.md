@@ -5,7 +5,7 @@
 ## 安装
 
 ```bash
-npm install -g jc
+npm install -g je-cd
 ```
 
 ## 用法
