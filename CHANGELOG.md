@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/joke-lx/jc/compare/v0.1.2...v0.2.0) (2026-08-01)
+
+
+### Features
+
+* **jc:** jc-development skill, jc mgr unified manager, and handler abstraction ([a6ddf31](https://github.com/joke-lx/jc/commit/a6ddf31bd47fcb1c0172a713cf8540f8947e16f2))
+
 ## [0.1.2](https://github.com/joke-lx/jc/compare/v0.1.1...v0.1.2) (2026-06-21)
 
 
