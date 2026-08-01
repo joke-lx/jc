@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { parseArgs, route } from '../../src/cli/router.js'
 
 describe('parseArgs', () => {
@@ -27,5 +27,32 @@ describe('route', () => {
   it('shows group listing for empty args (does not crash)', async () => {
     // Should not throw
     await expect(route([])).resolves.toBeUndefined()
+  })
+
+  it('rewrites "r <alias> [args...]" into the mgr run command', async () => {
+    // Capture the mgr run handler invocation without spawning a real process.
+    const mgr = await import('../../src/groups/mgr/index.js')
+    const runCmd = mgr.mgrGroup.commands.find(c => c.name === 'run')
+    expect(runCmd).toBeDefined()
+    if (!runCmd) return
+    const spy = vi.spyOn(runCmd, 'handler').mockResolvedValue()
+    try {
+      await route(['r', 'tsc', '--version'])
+      expect(spy).toHaveBeenCalledTimes(1)
+      expect(spy).toHaveBeenCalledWith(['tsc', '--version'])
+    } finally {
+      spy.mockRestore()
+    }
+  })
+
+  it('leaves "r" alone (no alias to rewrite to)', async () => {
+    // `jc r` is not registered as a group, so the existing "unknown group" branch fires.
+    const exit = vi.spyOn(process, 'exit').mockImplementation((() => { throw new Error('exit') }) as any)
+    try {
+      await expect(route(['r'])).rejects.toThrow('exit')
+      expect(exit).toHaveBeenCalledWith(1)
+    } finally {
+      exit.mockRestore()
+    }
   })
 })

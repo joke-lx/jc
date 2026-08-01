@@ -1,3 +1,15 @@
+// src/shared/system/process.ts
+// 进程 / 端口 / 资源信息的 manager。
+// 类名 "WinProcessManager" 是历史命名（jc 项目最初是 Windows 专用），与 mgr 抽象层无关；
+// 当前所有平台都用同一份实现（systeminformation 是跨平台的）。
+// 设计动机：
+// 1) 端口查询需要 systeminformation 的 networkConnections() + Windows 的 netstat -ano 兜底：
+//    systeminformation 在某些 Windows 版本上返回空数组，所以保留 netstat 路径。
+// 2) killProcess 的 SIGTERM→SIGKILL 升级是 jc-development skill spec 的硬不变量（详见
+//    references/execution-safety-and-platforms.md "进程执行模式"）。
+// ⚠️ Dead import：line 2 的 pidusage 引入后从未被任何方法使用。
+//   属于历史残留（jc-development skill spec 5.4 已记录），下一轮 SDD 单独清理。
+//   当前不动它以保持本轮 commit 范围最小（仅注释 + 行为零变化）。
 import si from 'systeminformation'
 import pidusage from 'pidusage'
 import { execSync } from 'child_process'

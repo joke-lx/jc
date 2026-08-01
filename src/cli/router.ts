@@ -3,6 +3,7 @@ import type { Group } from './types.js'
 import { claudeGroup } from '../groups/claude/index.js'
 import { happyGroup } from '../groups/happy/index.js'
 import { wGroup } from '../groups/w/index.js'
+import { mgrGroup } from '../groups/mgr/index.js'
 import {
   jc,
   printGroupHelp,
@@ -33,8 +34,15 @@ function registerGroup(group: Group): void {
 registerGroup(claudeGroup)
 registerGroup(happyGroup)
 registerGroup(wGroup)
+registerGroup(mgrGroup)
 
 export async function route(argv: string[]): Promise<void> {
+  // Shortcut: `jc r <alias> [args...]` is sugar for `jc mgr run <alias> [args...]`.
+  // Resolved at the router boundary so the mgr group's command contract is unchanged.
+  if (argv.length >= 2 && argv[0] === 'r') {
+    argv = ['mgr', 'run', ...argv.slice(1)]
+  }
+
   const parsed = parseArgs(argv)
 
   if (!parsed) {

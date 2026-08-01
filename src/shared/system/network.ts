@@ -1,3 +1,8 @@
+// src/shared/system/network.ts
+// 网络信息 + 工具的 manager：interfaces / DNS / WiFi / ping / tracert / 代理 / MAC。
+// 设计动机：systeminformation 不覆盖 WiFi 密码、代理、跨平台 ping 等场景，
+// 这里用 systeminformation + 各平台原生命令（netsh / ipconfig / ping）混合实现。
+// 与 mgr 抽象层无关：本文件是 system 层，不是 mgr 层；mgr 不消费这里的任何方法。
 import si from 'systeminformation'
 import { execSync } from 'child_process'
 
