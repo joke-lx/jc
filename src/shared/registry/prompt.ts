@@ -46,7 +46,12 @@ function attachInput(s: NodeJS.ReadableStream): void {
   s.on?.('end', onEndGlobal)
   s.on?.('close', onCloseGlobal)
 }
-attachInput(inputStream)
+
+// ⚠️ 不要在这里 attachInput(process.stdin)！模块顶层挂常驻 data 监听器会让
+// process.stdin 保持活跃，任何 import 了本模块的命令（jc l / jc ? / 任意 mgr 命令）
+// 打印完输出后进程无法空转退出——事件循环被 stdin 监听器吊着。
+// 正确做法：只在 prompt()/promptChoice() 真正被调用时，由 nextLine() 挂一次性监听器，
+// 读完一行立即 cleanup 移除。非交互命令从不调 prompt()，因此从不挂监听器，正常退出。
 
 // 测试 / 重置：替换底层流。生产代码不要调。
 export function _resetPromptIO(input: NodeJS.ReadableStream, output: NodeJS.WritableStream): void {
