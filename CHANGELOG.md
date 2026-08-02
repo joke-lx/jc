@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/joke-lx/jc/compare/v0.3.0...v0.3.1) (2026-08-02)
+
+
+### Bug Fixes
+
+* **mgr:** don't attach stdin listeners at module load ([8b21e48](https://github.com/joke-lx/jc/commit/8b21e4879f9eed788aab7f35c3268c7581910163))
+* **mgr:** preserve spaced Windows paths in handler preflight ([d682384](https://github.com/joke-lx/jc/commit/d68238488ede7b7dfd5c07146b8121297420f6e3))
+
 ## [0.3.0](https://github.com/joke-lx/jc/compare/v0.2.0...v0.3.0) (2026-08-02)
 
 
