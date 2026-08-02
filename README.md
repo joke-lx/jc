@@ -53,6 +53,11 @@ jc mgr restore backup.zip --dry-run               # 只报告不写
 jc mgr restore backup.zip --merge                 # 已存在 alias 用备份覆盖
 jc mgr restore backup.zip --replace               # 先自动备份当前 + 清空重建
 
+# --install 模式：先跑安装命令，再定位 bin 路径注册为 alias。
+# 适合 `uv tool install xxx` / `npm i -g xxx` 这类"安装=注册"的工具。
+jc mgr add py --install "uv tool install sql-harness" --bin sql-harness --alias sh
+jc mgr add npm --install "npm install -g typescript-language-server" --bin typescript-language-server --alias ts-ls
+
 # 已注册 alias 的选择式调用（四种写法等价）
 jc tool                       # 直接执行：等价于 jc mgr run tool
 jc m tool                     # 通过组别名

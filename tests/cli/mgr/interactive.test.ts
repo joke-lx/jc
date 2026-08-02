@@ -75,11 +75,11 @@ describe('mgr interactive fallbacks', () => {
     errSpy.mockRestore()
   })
 
-  it('add: TTY + prompts user for kind/source/alias/desc', async () => {
+  it('add: TTY + prompts user for kind/useInstall(N)/source/alias/desc', async () => {
     makeTTY()
     const exe = join(dir, 'tool.exe')
     writeFileSync(exe, 'x')
-    await resetIO(['exe', exe, 'tool', 'my tool'])
+    await resetIO(['exe', 'N', exe, 'tool', 'my tool'])
     const { handler } = await import('../../../src/groups/mgr/add.js')
     await handler([])
     const items = listItems()
