@@ -46,6 +46,12 @@ jc mgr rm tool                                    # 按别名删除（需确认�
 jc mgr rename tool t                              # 修改别名（需确认）
 jc mgr export > backup.json                       # 导出注册表
 jc mgr import backup.json                         # 导入注册表
+jc mgr backup backup.zip                          # 打包 registry → zip
+jc mgr backup backup.zip --include-local          # 同时拷贝本地 exe / py 源（交互确认）
+jc mgr restore backup.zip                         # 从 zip 还原（默认 skip）
+jc mgr restore backup.zip --dry-run               # 只报告不写
+jc mgr restore backup.zip --merge                 # 已存在 alias 用备份覆盖
+jc mgr restore backup.zip --replace               # 先自动备份当前 + 清空重建
 
 # 已注册 alias 的选择式调用（四种写法等价）
 jc tool                       # 直接执行：等价于 jc mgr run tool
@@ -102,6 +108,49 @@ jc tool --version             # 等价于 jc mgr run tool --version
 - `jc tool` 先查组名失败，再查 registry 命中 alias，路由到 mgr run
 
 未注册的名字仍按 `未知命令: <name>` 报错。
+
+## 备份 / 恢复（换设备一键导入）
+
+把当前 registry 打包成 zip，拷到新机器解压即可恢复：
+
+```bash
+jc mgr backup backup.zip                       # 仅 registry + manifest
+jc mgr backup backup.zip --include-local       # 同时打包本地 exe / py 源（默认交互确认）
+jc mgr backup backup.zip --include-local --yes # CI 场景跳过确认
+
+jc mgr restore backup.zip                      # 默认 skip：已存在 alias 不动
+jc mgr restore backup.zip --dry-run            # 只打印将做什么，不写盘
+jc mgr restore backup.zip --merge              # 同名 alias 用备份覆盖当前
+jc mgr restore backup.zip --replace            # 先自动备份当前 registry 再清空重建
+```
+
+### zip 包结构
+
+```
+backup.zip
+├── registry.json     # 当前 registry 的快照
+├── manifest.json     # 审计清单（含每个本地源被拷进的绝对路径）
+└── sources/          # 仅 --include-local 时存在
+    └── <alias>/<basename>
+```
+
+### 还原时的 exec / source 处理
+
+- **远端 / npm / URL 项**：`exec` 与 `source` 不动；restore 后跑 `jc mgr check <alias>` 重装到新机器。
+- **本地 exe / py + zip 带源**：解压到 `<JC_DATA>/sources/<alias>/<basename>`，写回 `exec` 与 `source` 为新路径。
+- **本地 exe / py + zip 未带源**：`failed++`，提示用户跑 `jc mgr check <alias>` 修复（不会写入一个在新机器必然失败的 exec）。
+
+### 隐私 / 安全
+
+- **本地源严格 opt-in**：`jc mgr backup` 默认不拷贝任何本地文件；必须显式 `--include-local`。
+- **交互确认**：`--include-local` 默认会列出将被拷贝的每个绝对路径，询问 `Proceed? [y/N]`；CI 用 `--yes` 跳过。
+- **manifest 审计**：zip 内的 `manifest.json` 始终记录每个本地源的**绝对路径**，从 zip 内容就能审计。
+- **不联网**：所有读写都只在本机进行。restore 只做 zip 解压 + JSON 解析，不执行 zip 内的可执行文件。
+- **`--replace` 自动回退**：执行前先把当前 `registry.json` 备份为 `registry.json.bak-<ISO>`，失败可人工恢复。
+
+### 与 `export` / `import` 的关系
+
+`backup` / `restore` 是 `export` / `import` 的超集：相同 JSON 格式，外加 zip 容器 + manifest + 可选本地源附件。两个旧命令保留不动。
 
 ## w 组 11 个类别
 
