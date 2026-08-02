@@ -40,6 +40,7 @@ jc w ?                # 命令帮助
 
 # 统一管理器（mgr）— 注册 npm / py / exe 项并通过别名调用
 jc mgr add exe "C:\path\to\tool.exe" --alias tool # 注册一个 exe
+jc mgr install --cmd "uv tool install sql-harness" --bin sql-harness --alias sh  # 一行：安装+注册
 jc mgr list                                       # 列出已注册的项
 jc mgr check tool                                 # 重新验证源是否可达
 jc mgr rm tool                                    # 按别名删除（需确认）
@@ -53,8 +54,7 @@ jc mgr restore backup.zip --dry-run               # 只报告不写
 jc mgr restore backup.zip --merge                 # 已存在 alias 用备份覆盖
 jc mgr restore backup.zip --replace               # 先自动备份当前 + 清空重建
 
-# --install 模式：先跑安装命令，再定位 bin 路径注册为 alias。
-# 适合 `uv tool install xxx` / `npm i -g xxx` 这类"安装=注册"的工具。
+# 已有工具时的 --install 模式（add 的别名）：注册已有路径/包名为 alias
 jc mgr add py --install "uv tool install sql-harness" --bin sql-harness --alias sh
 jc mgr add npm --install "npm install -g typescript-language-server" --bin typescript-language-server --alias ts-ls
 
@@ -73,7 +73,7 @@ jc r tool --version           # jc r <alias> 是历史快捷方式
 | claude | c | Claude Code CLI 包装 | 4 |
 | happy | hy | Happy mobile Claude 包装 | 7 |
 | w | w | 系统快捷命令集 | 87 |
-| mgr | m | 统一管理器：注册 npm / py / exe 项并通过别名调用 | 10 |
+| mgr | m | 统一管理器：注册 npm / py / exe 项并通过别名调用 | 11 |
 
 ## 顶层帮助
 
@@ -156,6 +156,43 @@ backup.zip
 ### 与 `export` / `import` 的关系
 
 `backup` / `restore` 是 `export` / `import` 的超集：相同 JSON 格式，外加 zip 容器 + manifest + 可选本地源附件。两个旧命令保留不动。
+
+## 安装外部工具并注册 alias
+
+很多工具是"装到 PATH 就有"的模式：`uv tool install`、`pip install`、`npm install -g`、`cargo install` 等。`jc mgr install` 把"装 + 注册"压成一行：
+
+```bash
+jc mgr install --cmd "uv tool install sql-harness"   --bin sql-harness        --alias sh
+jc mgr install --cmd "npm install -g ts-language-server" --bin typescript-language-server --alias ts-ls --kind npm
+jc mgr install --cmd "pipx install ruff"            --bin ruff               --alias ruff
+jc mgr install --cmd "cargo install fd-find"        --bin fd                 --alias fd
+```
+
+参数：
+
+| flag | 必填 | 说明 |
+|---|---|---|
+| `--cmd` | ✅ | 任意 shell 命令；jc 只负责运行它（stdio 透传，用户看到输出） |
+| `--bin` | ✅ | 安装后要在 PATH 里定位的可执行名（Windows 用 `where`，POSIX 用 `which`） |
+| `--alias` | ✅ | 注册到 registry 的别名 |
+| `--kind` |  | `exe`（默认） / `py` / `npm` |
+| `--desc` |  | 简介 |
+
+### 流程与失败语义
+
+1. 跑 `--cmd`（`spawnSync` + `shell:true`）
+2. `which <bin>` / `where <bin>` 找路径
+3. 找到 → 写入 registry：`exec=<绝对路径>`, `source=<cmd>`（audit 用），`sourceVerifiedAt=now`
+4. **任何一步失败 → exit 2，不写 registry**（不留下"alias 名占位但 bin 找不到"的脏数据）
+
+### `install` vs `add --install`
+
+| 写法 | 用法 |
+|---|---|
+| `jc mgr install --cmd "..." --bin x --alias x` | 一行安装+注册，常见工作流 |
+| `jc mgr add <kind> --install "..." --bin x --alias x` | 显式给 kind 的同一行为 |
+
+`install` 内部委托给 `add --install`，逻辑零重复，bug 修复自动跟随。
 
 ## 交互模式
 

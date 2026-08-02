@@ -10,10 +10,11 @@ import { commandDef as exportCmd } from './export.js'
 import { commandDef as importCmd } from './import.js'
 import { commandDef as backupCmd } from './backup.js'
 import { commandDef as restoreCmd } from './restore.js'
+import { commandDef as installCmd } from './install.js'
 
 export const mgrGroup: Group = {
   name: 'mgr',
   alias: 'm',
   description: '统一管理器：注册 npm / py / exe 项并通过别名调用',
-  commands: [addCmd, listCmd, runCmd, rmCmd, renameCmd, checkCmd, exportCmd, importCmd, backupCmd, restoreCmd],
+  commands: [addCmd, installCmd, listCmd, runCmd, rmCmd, renameCmd, checkCmd, exportCmd, importCmd, backupCmd, restoreCmd],
 }
