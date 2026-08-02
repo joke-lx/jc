@@ -54,13 +54,29 @@ export abstract class ItemHandler {
     })
   }
 
-  // 从 exec 字符串抽出"实际本地路径"：python <path> 取第二个 token，否则取第一个。
-  // ⚠️ Latent bug：split(/\s+/) 会破坏含空格的 Windows 路径（如 C:\Program Files\tool.exe）。
-  // 目前的 spaced-path 测试因 vi.mock('fs') 走 mock 路径而未暴露；运行时真碰到空格路径会被 fs.access 拒。
-  // 修复方向：让 preflight 检查 item.source（原始字符串）而非 item.exec（派生字符串），
-  // 或在 localPath 中识别引号段。下一轮 SDD 单独处理。
+  // 从 exec 字符串抽出"实际本地路径"。
+  // 历史实现用 split(/\s+/) 切分，会破坏含空格的 Windows 路径（如 C:\Program Files\tool.exe）：
+  // exec="D:\qq\ggit (1).exe" 被切成 ["D:\qq\ggit", "(1).exe"]，preflight 检查了截断的错误路径。
+  //
+  // 修复规则：
+  // 1. 已知解释器 / 复合命令前缀（python / python3 / py / node / npx）：取它**后面**整段作为路径。
+  //    为什么取整段而不是 split 第二个 token：python 脚本路径本身可能含空格。
+  // 2. 其它情况：整个 exec 就是本地路径（exe 无前缀），**不再 split**——含空格也整体返回。
+  // 3. npx -p <pkg> <bin> 特殊：npx 之后 -p <pkg> <bin> 都**不是**本地文件路径，应返回 npx 本身
+  //    （preflight 对 npm 已 override 为 {ok:true}，此路径实际不会被用到，保留历史行为）。
   protected localPath(exec: string): string {
-    const tokens = exec.split(/\s+/)
-    return tokens[0] === 'python' && tokens[1] ? tokens[1] : tokens[0]
+    const sp = exec.indexOf(' ')
+    if (sp > 0) {
+      const first = exec.slice(0, sp)
+      if (INTERP_PREFIXES.has(first)) {
+        if (first === 'npx') return first // npx -p <pkg> <bin>：返回 npx 本身
+        return exec.slice(sp + 1).trim() // python <path...>：返回 path 整段
+      }
+    }
+    return exec
   }
 }
+
+// 前缀表放模块顶层：localPath 是热路径（每次 run 前调用），避免每次调用重建 Set。
+// 必须是模块级 const，不能放在 class 方法之间（TS 语法错误）。
+const INTERP_PREFIXES = new Set(['python', 'python3', 'py', 'node', 'npx'])

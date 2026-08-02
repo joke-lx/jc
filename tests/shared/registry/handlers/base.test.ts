@@ -67,6 +67,15 @@ describe('ItemHandler.preflight', () => {
     expect(r.ok).toBe(false)
     if (!r.ok) expect(r.reason).toContain('源已失效')
   })
+
+  it('returns { ok: true } for a readable local file whose name contains spaces', async () => {
+    const f = join(dir, 'my tool (1).exe')
+    writeFileSync(f, 'MZ')
+    chmodSync(f, 0o755)
+    const h = new FakeHandler()
+    const r = await h.preflight(makeItem(f, f))
+    expect(r.ok).toBe(true)
+  })
 })
 
 describe('ItemHandler.run', () => {
@@ -93,5 +102,11 @@ describe('ItemHandler.localPath', () => {
   })
   it('returns tokens[0] for compound cmds (npx -p pkg bin)', () => {
     expect(h['localPath']('npx -p pkg bin')).toBe('npx')
+  })
+  it('keeps the whole exec when it contains spaces (no interpreter prefix)', () => {
+    expect(h['localPath']('C:\\Program Files\\tool (1).exe')).toBe('C:\\Program Files\\tool (1).exe')
+  })
+  it('extracts the python script path even when it contains spaces', () => {
+    expect(h['localPath']('python C:\\Program Files\\tool.py')).toBe('C:\\Program Files\\tool.py')
   })
 })
