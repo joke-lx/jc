@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/joke-lx/jc/compare/v0.2.0...v0.3.0) (2026-08-02)
+
+
+### Features
+
+* **mgr:** add backup and restore for portable registry snapshots ([e73aa23](https://github.com/joke-lx/jc/commit/e73aa23b42cb03084495e660af1f8bb66e674b3a))
+* **mgr:** interactive prompts when arguments are missing ([bce1e53](https://github.com/joke-lx/jc/commit/bce1e5328f0c2bf2505c838ea1e5fad675f6d72e))
+
+
+### Bug Fixes
+
+* **router:** support top-level help shortcuts and direct alias invocation ([2611372](https://github.com/joke-lx/jc/commit/2611372e96d3431ae673df205114f7381f818dbc))
+
 ## [0.2.0](https://github.com/joke-lx/jc/compare/v0.1.2...v0.2.0) (2026-08-01)
 
 
