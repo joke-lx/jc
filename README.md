@@ -152,6 +152,36 @@ backup.zip
 
 `backup` / `restore` 是 `export` / `import` 的超集：相同 JSON 格式，外加 zip 容器 + manifest + 可选本地源附件。两个旧命令保留不动。
 
+## 交互模式
+
+在真正的 TTY 终端（PowerShell / Windows Terminal / bash / zsh）下，任何 mgr 命令**参数不全时会逐步问用户补齐**，而不是直接退出：
+
+```bash
+jc mgr add              # 依次问 kind / source / alias / desc
+jc mgr rm               # 列出所有 alias 后问要删哪个
+jc mgr rename           # 问 old + new alias
+jc mgr check            # 问"单个 / 全部"；选全部时检查所有项并对失败项问"重试？"
+jc mgr run              # 列出所有 alias 后问跑哪个
+jc mgr import           # 问 stdin / 文件；跳过后问"切换 --merge 重新跑？"
+jc mgr restore          # 问 zip 路径 + 策略（skip / merge / replace / dry-run）
+jc mgr export           # 问 stdout / 文件
+```
+
+### 非 TTY 行为
+
+管道 / CI / 重定向场景下 stdin 不是 TTY，**所有交互式命令立即报错并退出**（exit 1 或 2），附带明确提示：
+
+```
+用法: jc mgr add <npm|py|exe> <source> --alias <alias> [--desc <desc>]
+提示: 缺少参数且当前为非交互模式（管道/CI）。请补全参数或加 --yes 后跟值。
+```
+
+这避免了 readline 在管道下 hang（导致 CI 永远卡死）。
+
+### 确认（y/N）严格 y-only
+
+任何 `Proceed? [y/N]` 或 `确认 ... ? (y/N)` 提示都**只接受小写 `y`**——其它任何输入（含 `Y`、`yes`、空串、`n`）都视为"否"。这是 conservative 选择：避免误操作。
+
 ## w 组 11 个类别
 
 | 类别 | 命令数 | 说明 |

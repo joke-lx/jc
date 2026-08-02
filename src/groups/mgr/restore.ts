@@ -20,6 +20,7 @@ import {
 } from '../../shared/registry/store.js'
 import { isManifest, type BackupManifest, type ManifestItem } from '../../shared/backup/manifest.js'
 import { openZip, hasEntry, readTextEntry } from '../../shared/backup/zip.js'
+import { isInteractive, prompt, promptChoice, NoTTYError } from '../../shared/registry/prompt.js'
 
 type Mode = 'skip' | 'merge' | 'replace' | 'dry-run'
 
@@ -28,7 +29,28 @@ interface ParsedArgs {
   mode: Mode
 }
 
-function parseArgs(args: string[]): ParsedArgs | null {
+async function resolveArgs(parsed: ParsedArgs): Promise<ParsedArgs> {
+  let { zipPath, mode } = parsed
+  if (!zipPath && isInteractive()) {
+    const p = await prompt('zip 路径?: ')
+    if (!p) { console.error(error('已取消（空输入）')); process.exit(1) }
+    zipPath = p
+  }
+  if (mode === 'skip' && isInteractive()) {
+    // 仅在用户没显式给 mode 时询问；CLI 给 --merge / --replace / --dry-run 不打扰。
+    const v = await promptChoice<Mode>('策略？', [
+      { label: 'skip — 已存在 alias 不动（默认）', value: 'skip' },
+      { label: 'merge — 用备份覆盖当前', value: 'merge' },
+      { label: 'replace — 先自动备份当前再清空重建', value: 'replace' },
+      { label: 'dry-run — 只报告不写', value: 'dry-run' },
+    ])
+    if (!v) { console.error(error('已取消（空输入）')); process.exit(1) }
+    mode = v
+  }
+  return { zipPath, mode }
+}
+
+function parseArgs(args: string[]): ParsedArgs {
   let zipPath = ''
   let mode: Mode = 'skip'
   for (const a of args) {
@@ -37,7 +59,6 @@ function parseArgs(args: string[]): ParsedArgs | null {
     else if (a === '--replace') mode = 'replace'
     else if (!zipPath) zipPath = a
   }
-  if (!zipPath) return null
   return { zipPath, mode }
 }
 
@@ -92,8 +113,16 @@ function planRestore(
 }
 
 export async function handler(args: string[]): Promise<void> {
-  const parsed = parseArgs(args)
-  if (!parsed) {
+  const initial = parseArgs(args)
+  let parsed: ParsedArgs
+  try {
+    parsed = await resolveArgs(initial)
+  } catch (e) {
+    if (e instanceof NoTTYError) { console.error(error(e.message)); process.exit(2) }
+    throw e
+  }
+
+  if (!parsed.zipPath) {
     console.error(error('用法: jc mgr restore <path.zip> [--dry-run | --merge | --replace]'))
     process.exit(1)
   }

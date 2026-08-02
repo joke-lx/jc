@@ -3,34 +3,53 @@
 // 不再做本地的 spawn / tokenization（已迁到 src/shared/registry/handlers/base.ts 的 ItemHandler.run）。
 // 本文件的失败路径走 console.error(error(...)) + process.exit(2)，保持 jc 整体退出码契约（0/1/2/3）。
 import { error } from '../../cli/output.js'
-import { getItem } from '../../shared/registry/store.js'
+import { getItem, listItems } from '../../shared/registry/store.js'
 import { getHandler } from '../../shared/registry/handlers/index.js'
+import { isInteractive, prompt, NoTTYError } from '../../shared/registry/prompt.js'
 
 export async function handler(args: string[]): Promise<void> {
-  // 解析 argv：argv[0] 是 alias，rest 透传给 handler.run。
-  // alias 用小写查：registry 永远存小写（ALIAS_RE 限制 + add.ts 强制 toLowerCase），
-  // 这里再 toLowerCase 一次容错用户输入大写。
-  const [alias, ...rest] = args
-  // 用法错误：argv 为空。退出 1（与 router 对未知 group / 未知 cmd 的处理一致）。
-  if (!alias) { console.error(error('用法: jc mgr run <alias> [args...]')); process.exit(1) }
+  let [alias, ...rest] = args
+
+  // argv 为空 或 alias 不在 registry → 交互选 alias。
+  if (!alias || !getItem(alias.toLowerCase())) {
+    if (!isInteractive()) {
+      console.error(error('用法: jc mgr run <alias> [args...]'))
+      if (alias && !getItem(alias.toLowerCase())) {
+        console.error(error(`未找到 alias: ${alias}`))
+      } else {
+        console.error(error('提示: 缺 alias 且当前为非交互模式。请提供 alias 或加 --yes 后跟值。'))
+      }
+      process.exit(alias ? 2 : 1)
+    }
+    const items = listItems()
+    if (items.length === 0) {
+      console.error(error('注册表为空；请先 jc mgr add'))
+      process.exit(2)
+    }
+    console.log('可用 alias:')
+    for (const it of items) console.log(`  ${it.alias}  (${it.kind})  ${it.desc}`)
+    try {
+      const picked = await prompt('输入 alias: ')
+      if (!picked) {
+        console.error(error('已取消（空输入）'))
+        process.exit(1)
+      }
+      alias = picked
+    } catch (e) {
+      if (e instanceof NoTTYError) { console.error(error(e.message)); process.exit(2) }
+      throw e
+    }
+  }
+
   const item = getItem(alias.toLowerCase())
-  // 找不到 alias：退出 2（属于"执行/查找失败"）。
   if (!item) { console.error(error(`未找到 alias: ${alias}`)); process.exit(2) }
-  // 通过工厂拿 handler：从此处开始所有 kind 差异都收敛到 handler 内部。
+
   const h = getHandler(item.kind)
-  // preflight：先做轻量源存在性检查，失败时给出明确提示。
-  // 不重跑 validate（不联网、不重跑 npm view），这是性能/语义上的 trade-off：
-  // preflight 失败只能说明"源当前不可达"，不代表"源原本就不可用"。
   const pre = await h.preflight(item)
   if (!pre.ok) { console.error(error(`${item.alias}: ${pre.reason}（请运行 jc mgr check ${item.alias} 修复）`)); process.exit(2) }
-  // 真正执行：把 user args 透传给 handler.run。
-  // handler 内部 spawn + shell:true + windowsHide:true 已在 base.ts 集中处理。
   try {
     await h.run(item, rest)
   } catch (e) {
-    // spawn 失败（非 0 退出 / error 事件）：catch 统一报 exit 2。
-    // 这里不区分"用户程序返回非 0"与"jc 自身失败"——用户级错误统一由 handler 的
-    // spawn 'close' 事件转 reject 出来；jc 自身错误（极少见）也走这里。
     console.error(error((e as Error).message || String(e)))
     process.exit(2)
   }
@@ -38,10 +57,8 @@ export async function handler(args: string[]): Promise<void> {
 
 export const commandDef = {
   name: 'run',
-  description: '按别名执行已注册的项',
+  description: '按别名执行已注册的项（缺 alias 时交互选择）',
   handler,
-  // 示例只列 npm 类；exe/py 的 `<alias> [args...]` 用法相同但 paths 含义不同。
-  // 完整示例见各 handler 的 preflight/validate 行为。
-  examples: ['jc mgr run tsc --version'],
+  examples: ['jc mgr run tsc --version', 'jc mgr run   # TTY 下选 alias'],
   related: ['jc mgr add', 'jc mgr list'],
 }
