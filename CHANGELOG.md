@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/joke-lx/jc/compare/v0.3.1...v0.3.2) (2026-08-02)
+
+
+### Bug Fixes
+
+* **mgr:** quote spaced exec paths before shell spawn ([245aad9](https://github.com/joke-lx/jc/commit/245aad9af278fa039641b88bbc3af4d1fc49742e))
+
 ## [0.3.1](https://github.com/joke-lx/jc/compare/v0.3.0...v0.3.1) (2026-08-02)
 
 
