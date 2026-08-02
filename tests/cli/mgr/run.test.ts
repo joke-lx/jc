@@ -87,7 +87,8 @@ describe('mgr run handler', () => {
     await handler(['spaced', '--flag', 'value with space'])
     expect(spawnMock).toHaveBeenCalled()
     const call = spawnMock.mock.calls[0]
-    expect(call[0]).toBe(spacedExe)
+    // quoteExecForShell 会给真实存在的含空格路径加引号，让 shell 不把它拆成命令+参数。
+    expect(call[0]).toBe(`"${spacedExe}"`)
     expect(call[1]).toEqual(['--flag', 'value with space'])
     expect(call[2]).toMatchObject({ shell: true, windowsHide: true })
   })

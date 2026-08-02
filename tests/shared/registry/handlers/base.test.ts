@@ -79,7 +79,12 @@ describe('ItemHandler.preflight', () => {
 })
 
 describe('ItemHandler.run', () => {
-  afterEach(() => vi.mocked(cp.spawn).mockReset())
+  let dir: string
+  beforeEach(() => { dir = mkdtempSync(join(tmpdir(), 'jc-run-')) })
+  afterEach(() => {
+    vi.mocked(cp.spawn).mockClear()
+    rmSync(dir, { recursive: true, force: true })
+  })
 
   it('spawns with shell:true and windowsHide:true', async () => {
     const h = new FakeHandler()
@@ -89,6 +94,39 @@ describe('ItemHandler.run', () => {
     expect(call[0]).toBe('/bin/echo hi')
     expect(call[1]).toEqual(['extra'])
     expect(call[2]).toMatchObject({ stdio: 'inherit', shell: true, windowsHide: true })
+  })
+
+  it('quotes a real exe path that contains spaces (shell would split it otherwise)', async () => {
+    const h = new FakeHandler()
+    const spaced = join(dir, 'tool (1).exe')
+    writeFileSync(spaced, 'MZ')
+    await h.run(makeItem(spaced, spaced), [])
+    const call = vi.mocked(cp.spawn).mock.calls[0]
+    // spawn(exec, ...) 的第一个参数应是带引号的完整路径。
+    expect(call[0]).toBe(`"${spaced}"`)
+  })
+
+  it('quotes only the script path for a python-prefixed exec containing spaces', async () => {
+    const h = new FakeHandler()
+    const script = join(dir, 'my script.py')
+    writeFileSync(script, 'print(1)')
+    await h.run(makeItem(`python ${script}`, script), [])
+    const call = vi.mocked(cp.spawn).mock.calls[0]
+    expect(call[0]).toBe(`python "${script}"`)
+  })
+
+  it('leaves npx compound commands unquoted', async () => {
+    const h = new FakeHandler()
+    await h.run(makeItem('npx -p typescript tsc', 'typescript'), [])
+    const call = vi.mocked(cp.spawn).mock.calls[0]
+    expect(call[0]).toBe('npx -p typescript tsc')
+  })
+
+  it('leaves a non-file compound command unquoted', async () => {
+    const h = new FakeHandler()
+    await h.run(makeItem('/bin/echo hi', '/bin/echo hi'), [])
+    const call = vi.mocked(cp.spawn).mock.calls[0]
+    expect(call[0]).toBe('/bin/echo hi')
   })
 })
 
