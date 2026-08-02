@@ -11,8 +11,10 @@ npm install -g je-cd
 ## 用法
 
 ```bash
-jc                    # 显示帮助
-jc l                  # 列出所有组
+jc                    # 显示帮助（列出所有组）
+jc l                  # 同上，等价于 jc / jc ? / jc help
+jc ?                  # 同上
+jc help               # 同上
 
 jc claude             # 启动 Claude Code
 jc claude b           # 跳过权限模式
@@ -35,6 +37,22 @@ jc w wifi             # Wi-Fi 连接信息
 jc w mac              # MAC 地址
 jc w who              # 当前用户信息
 jc w ?                # 命令帮助
+
+# 统一管理器（mgr）— 注册 npm / py / exe 项并通过别名调用
+jc mgr add exe "C:\path\to\tool.exe" --alias tool # 注册一个 exe
+jc mgr list                                       # 列出已注册的项
+jc mgr check tool                                 # 重新验证源是否可达
+jc mgr rm tool                                    # 按别名删除（需确认）
+jc mgr rename tool t                              # 修改别名（需确认）
+jc mgr export > backup.json                       # 导出注册表
+jc mgr import backup.json                         # 导入注册表
+
+# 已注册 alias 的选择式调用（四种写法等价）
+jc tool                       # 直接执行：等价于 jc mgr run tool
+jc m tool                     # 通过组别名
+jc mgr tool                   # 通过组全名
+jc tool --version             # 透传参数
+jc r tool --version           # jc r <alias> 是历史快捷方式
 ```
 
 ## 分组
@@ -44,6 +62,46 @@ jc w ?                # 命令帮助
 | claude | c | Claude Code CLI 包装 | 4 |
 | happy | hy | Happy mobile Claude 包装 | 7 |
 | w | w | 系统快捷命令集 | 87 |
+| mgr | m | 统一管理器：注册 npm / py / exe 项并通过别名调用 | 10 |
+
+## 顶层帮助
+
+下列写法都打印相同的"所有组"列表：
+
+```bash
+jc           # 无参数
+jc l
+jc ?
+jc help
+```
+
+组级别的帮助照旧用 `jc <组> l`（或 `jc <组> ?`）。
+
+## 选择式调用已注册 alias
+
+`mgr` 组把任何 npm / py / exe 包脚本注册为一个短 alias 后，可以用以下四种写法执行 —— 完全等价：
+
+```bash
+jc <alias> [args...]         # 直接执行（最简）
+jc m <alias> [args...]       # 通过组别名
+jc mgr <alias> [args...]     # 通过组全名
+jc r <alias> [args...]       # 历史快捷方式（jc r 是 jc mgr run 的简写）
+```
+
+例如注册 `tool` 后：
+
+```bash
+jc tool --version             # 等价于 jc mgr run tool --version
+```
+
+**路由优先级**：group 名 → group 别名 → 已注册 alias 回落。
+
+- `jc claude` 走 claude 组，不会去查 alias
+- `jc m list` 走 mgr 的 `list` 子命令，不会被当成 alias
+- `jc m tool` 走 mgr 的选择式回落，等价于 `jc mgr run tool`
+- `jc tool` 先查组名失败，再查 registry 命中 alias，路由到 mgr run
+
+未注册的名字仍按 `未知命令: <name>` 报错。
 
 ## w 组 11 个类别
 
