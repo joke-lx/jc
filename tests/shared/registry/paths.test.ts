@@ -6,10 +6,12 @@ import { join } from 'path'
 describe('registry paths', () => {
   let origXdg: string | undefined
   let origAppData: string | undefined
+  let origJc: string | undefined
 
   beforeEach(() => {
     origXdg = process.env.XDG_CONFIG_HOME
     origAppData = process.env.APPDATA
+    origJc = process.env.JC_REGISTRY_PATH
   })
 
   afterEach(() => {
@@ -17,6 +19,23 @@ describe('registry paths', () => {
     else process.env.XDG_CONFIG_HOME = origXdg
     if (origAppData === undefined) delete process.env.APPDATA
     else process.env.APPDATA = origAppData
+    if (origJc === undefined) delete process.env.JC_REGISTRY_PATH
+    else process.env.JC_REGISTRY_PATH = origJc
+  })
+
+  it('uses JC_REGISTRY_PATH verbatim when set, ignoring XDG/APPDATA', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'jc-paths-'))
+    const xdg = mkdtempSync(join(tmpdir(), 'jc-paths-xdg-'))
+    try {
+      process.env.JC_REGISTRY_PATH = join(dir, 'my-reg.json')
+      process.env.XDG_CONFIG_HOME = xdg
+      process.env.APPDATA = xdg
+      const { getRegistryPath } = await import('../../../src/shared/registry/paths.js')
+      expect(getRegistryPath()).toBe(join(dir, 'my-reg.json'))
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+      rmSync(xdg, { recursive: true, force: true })
+    }
   })
 
   it('uses XDG_CONFIG_HOME/jc/registry.json when XDG is set', async () => {

@@ -55,4 +55,13 @@ describe('route', () => {
       exit.mockRestore()
     }
   })
+
+  it('mgr group exposes cname as a top-level command', async () => {
+    const mgr = await import('../../src/groups/mgr/index.js')
+    const cname = mgr.mgrGroup.commands.find(c => c.name === 'cname')
+    expect(cname).toBeDefined()
+    expect(typeof cname?.handler).toBe('function')
+    // cname 不应暴露为 group alias（避免与已注册 tool alias 冲突）
+    expect(mgr.mgrGroup.alias).toBe('m')
+  })
 })

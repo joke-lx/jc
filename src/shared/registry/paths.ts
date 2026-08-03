@@ -3,22 +3,30 @@
 // 设计动机见 docs/superpowers/specs/2026-07-30-jc-mgr-design.md section 5.1。
 import { mkdirSync } from 'fs'
 import { join } from 'path'
+import { META } from '../meta.js'
 
 // 解析 registry.json 的绝对路径。
-// 优先级：XDG_CONFIG_HOME > Windows APPDATA > Unix ~/.config。
-// ⚠️ 注意：当前实现是 XDG 优先（即使在 Windows 上），这与"Windows 平台走 APPDATA"的直觉相反。
-// 这样设计的原因：1) XDG 是跨平台事实标准，CI 测试与 PowerShell/Git Bash 都能 export 它；
-// 2) 上一轮 SDD 测试曾因 ambient XDG 渗入导致 hermeticity bug，最终采用 XDG 优先让测试更可预测。
+// 优先级（从高到低）：
+//   1. JC_REGISTRY_PATH —— 用户显式指定（覆盖一切）。
+//      优先级最高的目的是支持"工作区隔离"（不同项目用不同 registry）和
+//      "CI hermeticity"（CI 里强制一个临时路径）。
+//   2. XDG_CONFIG_HOME —— 跨平台事实标准，CI 测试与 PowerShell/Git Bash 都能 export 它。
+//      ⚠️ 即便在 Windows 上也优先于 APPDATA，与"Windows 平台走 APPDATA"的直觉相反。
+//      这样设计的原因：1) XDG 是跨平台事实标准；2) 上一轮 SDD 测试曾因 ambient XDG 渗入
+//      导致 hermeticity bug，最终采用 XDG 优先让测试更可预测。
+//   3. Windows APPDATA / Unix ~/.config —— 平台默认。
 // 未来若要做"平台严格分离"（Windows 强制 APPDATA），可改回 platform-first，但需要重新过所有测试。
 export function getRegistryPath(): string {
+  const jc = process.env.JC_REGISTRY_PATH
+  if (jc) return jc
   const xdg = process.env.XDG_CONFIG_HOME
-  if (xdg) return join(xdg, 'jc', 'registry.json')
+  if (xdg) return join(xdg, META.dataDirName, 'registry.json')
   if (process.platform === 'win32') {
     const base = process.env.APPDATA || join(process.env.USERPROFILE || '', 'AppData', 'Roaming')
-    return join(base, 'jc', 'registry.json')
+    return join(base, META.dataDirName, 'registry.json')
   }
   const base = join(process.env.HOME || '', '.config')
-  return join(base, 'jc', 'registry.json')
+  return join(base, META.dataDirName, 'registry.json')
 }
 
 // 创建父目录（首次写入前调一次）。

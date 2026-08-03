@@ -36,6 +36,15 @@ describe('mgr export / import', () => {
     writeSpy.mockRestore()
   })
 
+  it('export --out writes to the given path without prompting', async () => {
+    addItem({ kind: 'py', source: '/x.py', alias: 'a', desc: '', exec: 'python /x.py', createdAt: 't', sourceVerifiedAt: 't' })
+    const out = join(dir, 'out.json')
+    const { handler } = await import('../../../src/groups/mgr/export.js')
+    await handler(['--out', out])
+    const parsed = JSON.parse(readFileSync(out, 'utf-8'))
+    expect(parsed.items[0].alias).toBe('a')
+  })
+
   it('import reads a file, preserves fields, and reports counts', async () => {
     const file = join(dir, 'r.json')
     writeFileSync(file, JSON.stringify({ version: 1, items: [
