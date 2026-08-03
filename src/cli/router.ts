@@ -6,7 +6,7 @@ import { wGroup } from '../groups/w/index.js'
 import { mgrGroup } from '../groups/mgr/index.js'
 import { getItem } from '../shared/registry/store.js'
 import {
-  jc,
+  getStyledCliName,
   printGroupHelp,
   printCategoryHelp,
   printCommandHelp,
@@ -38,17 +38,17 @@ registerGroup(wGroup)
 registerGroup(mgrGroup)
 
 function printTopLevelHelp(): void {
-  console.log(`${jc} — j 命令套件`)
+  console.log(`${getStyledCliName()} — j 命令套件`)
   console.log()
   for (const [key, g] of Object.entries(groups)) {
     if (key === g.name) {
-      console.log(`  ${jc} ${chalk.yellow(g.name.padEnd(14))} ${g.description}`)
+      console.log(`  ${getStyledCliName()} ${chalk.yellow(g.name.padEnd(14))} ${g.description}`)
     }
   }
   console.log()
-  console.log(`用法: ${jc} ${chalk.yellow('<组>')} ${chalk.blue('<命令>')} [参数...]`)
-  console.log(`查看组详情: ${jc} ${chalk.yellow('<组>')} l`)
-  console.log(`直接执行已注册 alias: ${jc} ${chalk.yellow('<alias>')} [args...]`)
+  console.log(`用法: ${getStyledCliName()} ${chalk.yellow('<组>')} ${chalk.blue('<命令>')} [参数...]`)
+  console.log(`查看组详情: ${getStyledCliName()} ${chalk.yellow('<组>')} l`)
+  console.log(`直接执行已注册 alias: ${getStyledCliName()} ${chalk.yellow('<alias>')} [args...]`)
 }
 
 export async function route(argv: string[]): Promise<void> {

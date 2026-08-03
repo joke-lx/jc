@@ -45,7 +45,14 @@ jc mgr list                                       # 列出已注册的项
 jc mgr check tool                                 # 重新验证源是否可达
 jc mgr rm tool                                    # 按别名删除（需确认）
 jc mgr rename tool t                              # 修改别名（需确认）
-jc mgr export > backup.json                       # 导出注册表
+jc mgr export > backup.json                       # 导出注册表（旧行为：stdout）
+jc mgr export backup.json                         # 或写到文件
+jc mgr export --out D:\backups\r.json             # 显式指定路径（不交互）
+jc mgr config path                                # 看当前 registry 解析路径
+jc mgr config init --dir D:\dev\my-registry       # 在自定义位置初始化空 registry
+jc mgr cname                                      # 看当前 jc CLI 名 + 来源
+jc mgr cname bb                                   # 给 jc 起别名 bb（自动装 launcher，原名 jc 仍可用）
+jc mgr cname reset                                # 恢复 jc（卸 launcher）
 jc mgr import backup.json                         # 导入注册表
 jc mgr backup backup.zip                          # 打包 registry → zip
 jc mgr backup backup.zip --include-local          # 同时拷贝本地 exe / py 源（交互确认）
@@ -73,7 +80,9 @@ jc r tool --version           # jc r <alias> 是历史快捷方式
 | claude | c | Claude Code CLI 包装 | 4 |
 | happy | hy | Happy mobile Claude 包装 | 7 |
 | w | w | 系统快捷命令集 | 87 |
-| mgr | m | 统一管理器：注册 npm / py / exe 项并通过别名调用 | 11 |
+| mgr | m | 统一管理器：注册 npm / py / exe 项并通过别名调用 | 13 |
+
+> 每个命令由 `src/cli/Command.ts` 的抽象基类 `Command` 派生；命令元数据（examples / helpText / related）用 `${this.bin}` 引用 canonical 名（来自 `src/shared/meta.ts` 的 `META.binaryName`），运行时由输出层替换为当前 CLI 名。
 
 ## 顶层帮助
 
@@ -113,6 +122,99 @@ jc tool --version             # 等价于 jc mgr run tool --version
 - `jc tool` 先查组名失败，再查 registry 命中 alias，路由到 mgr run
 
 未注册的名字仍按 `未知命令: <name>` 报错。
+
+## CLI 别名（jc mgr cname）
+
+jc 默认入口叫 `jc`。如果你更习惯叫它 `bb`、`j`、或别的名字，可以给 jc 起别名 —— 原名 `jc` 始终保留，两边都能用。
+
+```bash
+jc mgr cname                  # 查看当前 CLI 名 + 来源
+jc mgr cname bb               # 设别名为 bb（等价于 jc mgr cname set bb）
+jc mgr cname set bb           # 同上，语义更显式
+jc mgr cname reset            # 恢复 jc
+```
+
+### 行为
+
+- **`jc mgr cname set bb`** 会自动在你 jc 所在的 bin 目录里创建一个 launcher：
+  - POSIX：符号链接 `bb → jc`
+  - Windows：`bb.cmd` + `bb`（Git Bash 用的 bash shim），转发到 `jc %*`
+  - launcher 文件首行带 `# jc-managed-launcher:` 标记；`reset` 只删带标记的
+  - **不会**触碰 `jc` 自身的 npm shim —— 即使 reset 也不会让 jc 不可用
+- 同时把 `cliName=bb` 写进 `config.json`（路径见下）
+- 装 launcher 失败 → config 不写；写 config 失败 → launcher 已回滚
+- 不存在的 launcher 目标（如用户环境里没有 PATH）→ 报错并提示手动加 shell alias 作为回退
+
+### 配置文件
+
+| 项 | 位置 | 说明 |
+|---|---|---|
+| `config.json` | `${JC_CONFIG_PATH}` 或 `${XDG_CONFIG_HOME}/jc/config.json` 或 `${APPDATA}/jc/config.json` | 存 cliName + launcher 元数据 |
+| env 覆盖 | `JC_CLI_NAME=bb jc ...` | 临时覆盖，优先级最高 |
+
+`jc mgr cname set bb` 在 `JC_CLI_NAME` 已设时拒绝修改（避免误导：env 优先级高，写了 config 也不会生效）。
+
+### 兼容性约束
+
+- `package.json` 的 `bin: "jc"` **不变** —— npm 全局装出来的可执行名永远是 `jc`
+- 数据目录（`%APPDATA%\jc\registry.json`）**不变**
+- env 前缀（`JC_REGISTRY_PATH` 等）**不变**
+- 所有 examples 字面量仍是 `jc` —— README 不应该跟着用户本机配置变；renderer 在运行时把帮助文本里的 `jc` 替换成当前配置名
+
+### 用法举例
+
+```bash
+# 配别名后
+bb mgr list                  # 跟 jc mgr list 完全等价
+jc mgr list                  # 原名仍然可用
+
+# 帮助文本也跟着变
+bb mgr config path
+# → bb
+#   (来源: config)
+```
+
+## Registry 位置与 export 默认
+
+默认 registry 路径由 `getRegistryPath()` 解析，优先级：
+
+1. **`JC_REGISTRY_PATH` env 变量**（最高）—— 一旦设置就用它，忽略其他来源
+2. `XDG_CONFIG_HOME/jc/registry.json`（即便 Windows 也优先于 APPDATA，跨平台 CI 友好）
+3. Windows `%APPDATA%\jc\registry.json` / Unix `~/.config/jc/registry.json`
+
+```bash
+# 看当前路径 + 来源 + 状态
+jc mgr config path
+# → C:\Users\joke\AppData\Roaming\jc\registry.json
+#   (来源: Windows APPDATA 默认值)
+#   (状态: 已存在，含 5 项)
+
+# 自定义位置（持久生效；新 shell 才看得到）
+setx JC_REGISTRY_PATH "D:\dev\my-registry.json"     # Windows
+export JC_REGISTRY_PATH="$HOME/.local/jc/registry.json"  # POSIX
+
+# 在自定义位置初始化一个空 registry
+jc mgr config init --dir D:\dev\my-registry
+# → 已初始化: D:\dev\my-registry\registry.json
+#   临时使用: $env:JC_REGISTRY_PATH = "..."; jc ...
+#   永久生效: setx JC_REGISTRY_PATH "..."
+```
+
+### `jc mgr export` 的默认行为变化
+
+无参数 + TTY 时现在不再问"stdout / 文件"，而是：
+
+1. 计算 `${REGISTRY_DIR}/exports/registry-{ISO}.json` 作为建议路径
+2. 提示用户：回车接受，或输入新路径，或输入 `-` 走 stdout
+
+非 TTY 下保持旧行为（直接输出到 stdout，方便管道重定向）。
+
+```bash
+jc mgr export                              # 交互：接受默认 / 改写 / 走 stdout
+jc mgr export --out D:\r.json              # 显式：不交互，写到指定路径
+jc mgr export -                            # 强制 stdout
+jc mgr export D:\r.json                    # 位置参数（向后兼容）
+```
 
 ## 备份 / 恢复（换设备一键导入）
 
@@ -206,7 +308,7 @@ jc mgr check            # 问"单个 / 全部"；选全部时检查所有项并�
 jc mgr run              # 列出所有 alias 后问跑哪个
 jc mgr import           # 问 stdin / 文件；跳过后问"切换 --merge 重新跑？"
 jc mgr restore          # 问 zip 路径 + 策略（skip / merge / replace / dry-run）
-jc mgr export           # 问 stdout / 文件
+jc mgr export           # 提议 ${REGISTRY_DIR}/exports/registry-{ISO}.json，回车确认或改写
 ```
 
 ### 非 TTY 行为

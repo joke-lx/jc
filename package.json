@@ -14,7 +14,11 @@
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "jc": "node dist/index.js",
+    "jc:dev": "tsup --watch & node dist/index.js",
+    "jc:watch": "node --watch dist/index.js",
+    "jc:debug": "node --enable-source-maps --inspect dist/index.js"
   },
   "dependencies": {
     "adm-zip": "^0.6.0",
