@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/joke-lx/jc/compare/v0.3.2...v0.4.0) (2026-08-02)
+
+
+### Features
+
+* **mgr:** add --install mode for one-shot install-and-alias workflow ([932d76e](https://github.com/joke-lx/jc/commit/932d76e95abfc3f4f07bced701ea6c69ad72c3ae))
+* **mgr:** add standalone 'install' verb for one-shot tool registration ([765dc54](https://github.com/joke-lx/jc/commit/765dc54ee0962d58fbb801955e5ca8fee88ef0b7))
+
 ## [0.3.2](https://github.com/joke-lx/jc/compare/v0.3.1...v0.3.2) (2026-08-02)
 
 
