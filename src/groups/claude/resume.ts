@@ -1,11 +1,28 @@
 import { spawn } from 'child_process'
+import { Command } from '../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeResume(_args: string[]): Promise<void> {
+
   return new Promise((resolve, reject) => {
     const child = spawn('claude', ['-r', '--dangerously-skip-permissions'], { stdio: 'inherit', shell: true })
     child.on('close', (c) => c === 0 ? resolve() : reject(new Error(`exit ${c}`)))
     child.on('error', reject)
   })
+
 }
 
-export const commandDef = { name: 'r', description: '恢复上次会话', handler, examples: ['jc claude r'] }
+export class ResumeCommand extends Command {
+  name = "r"
+  description = "恢复上次会话"
+  examples = [`${this.bin} claude r`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeResume(_args)
+  }
+}
+
+export const commandDef = new ResumeCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
+}

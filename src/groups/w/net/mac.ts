@@ -1,7 +1,9 @@
 // src/groups/w/net/mac.ts
 import { getNetworkManager } from '../../../shared/system/adapter.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeMac(_args: string[]): Promise<void> {
+
   const macs = await getNetworkManager().getMacAddresses()
   if (macs.length === 0) {
     console.log('未找到网络接口')
@@ -10,12 +12,22 @@ export async function handler(_args: string[]): Promise<void> {
   for (const m of macs) {
     console.log(`${m.name}: ${m.mac || '-'}`)
   }
+
 }
 
-export const commandDef = {
-  name: 'mac',
-  description: 'MAC 地址',
-  handler,
-  examples: ['jc w mac'],
-  related: ['jc w ip', 'jc w ip4'],
+export class MacCommand extends Command {
+  name = "mac"
+  description = "MAC 地址"
+  examples = [`${this.bin} w mac`]
+  related = [`${this.bin} w ip`, `${this.bin} w ip4`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeMac(_args)
+  }
+}
+
+export const commandDef = new MacCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

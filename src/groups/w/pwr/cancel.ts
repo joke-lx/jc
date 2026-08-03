@@ -1,15 +1,27 @@
 // src/groups/w/pwr/cancel.ts
 import { execSync } from 'child_process'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeCancel(_args: string[]): Promise<void> {
+
   const cmd = process.platform === 'win32' ? 'shutdown /a' : 'shutdown -c'
   execSync(cmd, { stdio: 'inherit' })
+
 }
 
-export const commandDef = {
-  name: 'cancel',
-  description: '取消关机/重启',
-  handler,
-  examples: ['jc w cancel'],
-  related: ['jc w off', 'jc w reboot'],
+export class CancelCommand extends Command {
+  name = "cancel"
+  description = "取消关机/重启"
+  examples = [`${this.bin} w cancel`]
+  related = [`${this.bin} w off`, `${this.bin} w reboot`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeCancel(_args)
+  }
+}
+
+export const commandDef = new CancelCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

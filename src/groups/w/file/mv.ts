@@ -1,12 +1,15 @@
 // src/groups/w/file/mv.ts
 import fs from 'fs'
+import { cliText } from '../../../cli/output.js'
 import path from 'path'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeMv(args: string[]): Promise<void> {
+
   const src = args[0]
   const dest = args[1]
   if (!src || !dest) {
-    console.log('用法: jc w mv <source> <destination>')
+    console.log(cliText('用法: jc w mv <source> <destination>'))
     return
   }
   try {
@@ -19,12 +22,22 @@ export async function handler(args: string[]): Promise<void> {
   } catch (e: any) {
     console.error(`移动失败: ${e.message}`)
   }
+
 }
 
-export const commandDef = {
-  name: 'mv',
-  description: '移动或重命名文件/目录',
-  handler,
-  examples: ['jc w mv old.txt new.txt', 'jc w mv file.txt ./backup/'],
-  related: ['jc w cp', 'jc w del', 'jc w ls'],
+export class MvCommand extends Command {
+  name = "mv"
+  description = "移动或重命名文件/目录"
+  examples = [`${this.bin} w mv old.txt new.txt`, `${this.bin} w mv file.txt ./backup/`]
+  related = [`${this.bin} w cp`, `${this.bin} w del`, `${this.bin} w ls`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeMv(args)
+  }
+}
+
+export const commandDef = new MvCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

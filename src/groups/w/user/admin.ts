@@ -1,7 +1,9 @@
 // src/groups/w/user/admin.ts
 import { execSync } from 'child_process'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeAdmin(_args: string[]): Promise<void> {
+
   if (process.platform === 'win32') {
     try {
       execSync('net session', { stdio: 'ignore' })
@@ -12,11 +14,21 @@ export async function handler(_args: string[]): Promise<void> {
   } else {
     console.log(process.getuid?.() === 0 ? '✅ 以 root 身份运行' : '⚠️ 以普通用户身份运行')
   }
+
 }
 
-export const commandDef = {
-  name: 'admin',
-  description: '检查是否管理员/root',
-  handler,
-  examples: ['jc w admin'],
+export class AdminCommand extends Command {
+  name = "admin"
+  description = "检查是否管理员/root"
+  examples = [`${this.bin} w admin`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeAdmin(_args)
+  }
+}
+
+export const commandDef = new AdminCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

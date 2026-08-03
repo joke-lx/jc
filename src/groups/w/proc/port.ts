@@ -1,8 +1,10 @@
 // src/groups/w/proc/port.ts
 import { getProcessManager } from '../../../shared/system/adapter.js'
 import { error } from '../../../cli/output.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executePort(args: string[]): Promise<void> {
+
   const pm = getProcessManager()
   if (args.length === 0) {
     const ports = await pm.getListeningPorts()
@@ -25,13 +27,25 @@ export async function handler(args: string[]): Promise<void> {
     return
   }
   console.table(procs.map(p => ({ PID: p.pid, 进程名: p.name, CPU: `${p.cpu}%`, 内存: `${p.memory}MB` })))
+
 }
 
-export const commandDef = {
-  name: 'p',
-  description: '查端口占用的进程',
-  handler,
-  helpText: '用法:\n  jc w p [无参]  - 列所有监听端口\n  jc w p <PORT>  - 查指定端口',
-  examples: ['jc w p', 'jc w p 3306'],
-  related: ['jc w pk', 'jc w k', 'jc w portscan'],
+export class PortCommand extends Command {
+  name = "p"
+  description = "查端口占用的进程"
+  helpText = `用法:
+  ${this.bin} w p [无参]  - 列所有监听端口
+  ${this.bin} w p <PORT>  - 查指定端口`
+  examples = [`${this.bin} w p`, `${this.bin} w p 3306`]
+  related = [`${this.bin} w pk`, `${this.bin} w k`, `${this.bin} w portscan`]
+
+  async handler(args: string[]): Promise<void> {
+    return executePort(args)
+  }
+}
+
+export const commandDef = new PortCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

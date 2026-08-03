@@ -1,14 +1,17 @@
 // src/groups/mgr/rm.ts
 import { error } from '../../cli/output.js'
+import { cliText } from '../../cli/output.js'
 import { confirm } from '../../shared/registry/confirm.js'
 import { getItem, listItems, removeItem } from '../../shared/registry/store.js'
 import { isInteractive, prompt, NoTTYError } from '../../shared/registry/prompt.js'
+import { Command } from '../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeRm(args: string[]): Promise<void> {
+
   let [alias] = args
   if (!alias) {
     if (!isInteractive()) {
-      console.error(error('用法: jc mgr rm <alias>'))
+      console.error(error(cliText('用法: jc mgr rm <alias>')))
       console.error(error('提示: 缺 alias 且当前为非交互模式。请提供 alias 或加 --yes 后跟值。'))
       process.exit(1)
     }
@@ -35,12 +38,22 @@ export async function handler(args: string[]): Promise<void> {
   if (!ok) { console.log('已取消'); return }
   removeItem(item.alias)
   console.log(`已删除: ${item.alias}`)
+
 }
 
-export const commandDef = {
-  name: 'rm',
-  description: '按别名删除已注册的项（需确认；缺 alias 时交互选择）',
-  handler,
-  examples: ['jc mgr rm tsc', 'jc mgr rm   # TTY 下选 alias'],
-  related: ['jc mgr list', 'jc mgr rename'],
+export class RmCommand extends Command {
+  name = "rm"
+  description = "按别名删除已注册的项（需确认；缺 alias 时交互选择）"
+  examples = [`${this.bin} mgr rm tsc`, `${this.bin} mgr rm   # TTY 下选 alias`]
+  related = [`${this.bin} mgr list`, `${this.bin} mgr rename`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeRm(args)
+  }
+}
+
+export const commandDef = new RmCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

@@ -28,8 +28,10 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
 }
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeSize(args: string[]): Promise<void> {
+
   const target = args[0] || '.'
   try {
     const stat = fs.statSync(target)
@@ -43,12 +45,22 @@ export async function handler(args: string[]): Promise<void> {
   } catch (e: any) {
     console.error(`获取大小失败: ${e.message}`)
   }
+
 }
 
-export const commandDef = {
-  name: 'size',
-  description: '目录或文件大小',
-  handler,
-  examples: ['jc w size .', 'jc w size ./node_modules'],
-  related: ['jc w disk', 'jc w ls', 'jc w dtree'],
+export class SizeCommand extends Command {
+  name = "size"
+  description = "目录或文件大小"
+  examples = [`${this.bin} w size .`, `${this.bin} w size ./node_modules`]
+  related = [`${this.bin} w disk`, `${this.bin} w ls`, `${this.bin} w dtree`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeSize(args)
+  }
+}
+
+export const commandDef = new SizeCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

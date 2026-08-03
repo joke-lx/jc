@@ -81,8 +81,10 @@ async function resolveSource(isTTY: boolean): Promise<string> {
     }
   }
 }
+import { Command } from '../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeImport(args: string[]): Promise<void> {
+
   const [pathArg, ...rest] = args
   let raw: string
   try {
@@ -113,12 +115,22 @@ export async function handler(args: string[]): Promise<void> {
       if (strict && (second.failed > 0 || second.skipped > 0)) process.exit(2)
     }
   }
+
 }
 
-export const commandDef = {
-  name: 'import',
-  description: '从文件或 stdin 导入注册表 JSON（缺来源时交互问；跳过后问是否切换 --merge）',
-  handler,
-  examples: ['jc mgr import registry.json', 'cat r.json | jc mgr import --strict', 'jc mgr import   # TTY 下选 stdin/文件'],
-  related: ['jc mgr export', 'jc mgr backup'],
+export class ImportCommand extends Command {
+  name = "import"
+  description = "从文件或 stdin 导入注册表 JSON（缺来源时交互问；跳过后问是否切换 --merge）"
+  examples = [`${this.bin} mgr import registry.json`, `cat r.json | ${this.bin} mgr import --strict`, `${this.bin} mgr import   # TTY 下选 stdin/文件`]
+  related = [`${this.bin} mgr export`, `${this.bin} mgr backup`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeImport(args)
+  }
+}
+
+export const commandDef = new ImportCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

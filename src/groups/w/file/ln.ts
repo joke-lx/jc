@@ -1,12 +1,15 @@
 // src/groups/w/file/ln.ts
 import fs from 'fs'
+import { cliText } from '../../../cli/output.js'
 import path from 'path'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeLn(args: string[]): Promise<void> {
+
   const target = args[0]
   const linkPath = args[1]
   if (!target || !linkPath) {
-    console.log('用法: jc w ln <target> <link>')
+    console.log(cliText('用法: jc w ln <target> <link>'))
     return
   }
   try {
@@ -23,12 +26,22 @@ export async function handler(args: string[]): Promise<void> {
   } catch (e: any) {
     console.error(`创建链接失败: ${e.message}`)
   }
+
 }
 
-export const commandDef = {
-  name: 'ln',
-  description: '创建符号链接',
-  handler,
-  examples: ['jc w ln /real/path /link/path'],
-  related: ['jc w cp', 'jc w mv', 'jc w ls'],
+export class LnCommand extends Command {
+  name = "ln"
+  description = "创建符号链接"
+  examples = [`${this.bin} w ln /real/path /link/path`]
+  related = [`${this.bin} w cp`, `${this.bin} w mv`, `${this.bin} w ls`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeLn(args)
+  }
+}
+
+export const commandDef = new LnCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

@@ -8,6 +8,7 @@
 // 3. zip 内必须有 manifest.json：用户从 zip 内容里就能审计"什么文件被拷了"。
 // 4. 错误：zip 路径不存在父目录 / 写失败 / 文件不存在 → exit 2。
 import { createInterface } from 'readline'
+import { cliText } from '../../cli/output.js'
 import { existsSync, statSync } from 'fs'
 import { dirname } from 'path'
 import { error, success, warning } from '../../cli/output.js'
@@ -55,11 +56,13 @@ function askYesNo(question: string): Promise<boolean> {
     })
   })
 }
+import { Command } from '../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeBackup(args: string[]): Promise<void> {
+
   const parsed = parseArgs(args)
   if (!parsed) {
-    console.error(error('用法: jc mgr backup <path.zip> [--include-local] [--yes]'))
+    console.error(error(cliText('用法: jc mgr backup <path.zip> [--include-local] [--yes]')))
     process.exit(1)
   }
 
@@ -146,16 +149,22 @@ export async function handler(args: string[]): Promise<void> {
 
   const localCount = manifest.items.filter((i: ManifestItem) => i.bundledAs).length
   console.log(success(`已备份: ${parsed.zipPath}（${manifest.items.length} 项，本地源 ${localCount} 个）`))
+
 }
 
-export const commandDef = {
-  name: 'backup',
-  description: '将当前 registry 打包成 zip（可选包含本地源）',
-  handler,
-  examples: [
-    'jc mgr backup backup.zip',
-    'jc mgr backup backup.zip --include-local',
-    'jc mgr backup backup.zip --include-local --yes',
-  ],
-  related: ['jc mgr restore', 'jc mgr export'],
+export class BackupCommand extends Command {
+  name = "backup"
+  description = "将当前 registry 打包成 zip（可选包含本地源）"
+  examples = [`${this.bin} mgr backup backup.zip`, `${this.bin} mgr backup backup.zip --include-local`, `${this.bin} mgr backup backup.zip --include-local --yes`]
+  related = [`${this.bin} mgr restore`, `${this.bin} mgr export`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeBackup(args)
+  }
+}
+
+export const commandDef = new BackupCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

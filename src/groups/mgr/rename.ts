@@ -1,16 +1,19 @@
 // src/groups/mgr/rename.ts
 import { error } from '../../cli/output.js'
+import { cliText } from '../../cli/output.js'
 import { ALIAS_RE } from '../../shared/registry/types.js'
 import { confirm } from '../../shared/registry/confirm.js'
 import { getItem, listItems, renameItem } from '../../shared/registry/store.js'
 import { isInteractive, prompt, NoTTYError } from '../../shared/registry/prompt.js'
+import { Command } from '../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeRename(args: string[]): Promise<void> {
+
   let [oldAlias, newAlias] = args
   const needsInteractive = !oldAlias || !newAlias
   if (needsInteractive) {
     if (!isInteractive()) {
-      console.error(error('用法: jc mgr rename <old-alias> <new-alias>'))
+      console.error(error(cliText('用法: jc mgr rename <old-alias> <new-alias>')))
       console.error(error('提示: 参数不全且当前为非交互模式。请补全参数。'))
       process.exit(1)
     }
@@ -47,12 +50,22 @@ export async function handler(args: string[]): Promise<void> {
   if (!ok) { console.log('已取消'); return }
   renameItem(old, next)
   console.log(`已改名: ${old} -> ${next}`)
+
 }
 
-export const commandDef = {
-  name: 'rename',
-  description: '修改已注册项的别名（需确认；缺参时交互填入）',
-  handler,
-  examples: ['jc mgr rename tsc tscc', 'jc mgr rename   # TTY 下逐步问'],
-  related: ['jc mgr rm', 'jc mgr list'],
+export class RenameCommand extends Command {
+  name = "rename"
+  description = "修改已注册项的别名（需确认；缺参时交互填入）"
+  examples = [`${this.bin} mgr rename tsc tscc`, `${this.bin} mgr rename   # TTY 下逐步问`]
+  related = [`${this.bin} mgr rm`, `${this.bin} mgr list`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeRename(args)
+  }
+}
+
+export const commandDef = new RenameCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

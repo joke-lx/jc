@@ -1,7 +1,9 @@
 // src/groups/w/net/conn.ts
 import { getNetworkManager } from '../../../shared/system/adapter.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeConn(_args: string[]): Promise<void> {
+
   const conns = await getNetworkManager().getConnections()
   if (conns.length === 0) {
     console.log('无 TCP 连接')
@@ -20,12 +22,22 @@ export async function handler(_args: string[]): Promise<void> {
     }
     if (listening.length > 20) console.log(`  ... 还有 ${listening.length - 20} 个`)
   }
+
 }
 
-export const commandDef = {
-  name: 'conn',
-  description: 'TCP 连接信息',
-  handler,
-  examples: ['jc w conn'],
-  related: ['jc w p', 'jc w portscan'],
+export class ConnCommand extends Command {
+  name = "conn"
+  description = "TCP 连接信息"
+  examples = [`${this.bin} w conn`]
+  related = [`${this.bin} w p`, `${this.bin} w portscan`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeConn(_args)
+  }
+}
+
+export const commandDef = new ConnCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

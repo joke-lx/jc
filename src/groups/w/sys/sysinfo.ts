@@ -1,7 +1,9 @@
 // src/groups/w/sys/sysinfo.ts
 import { getOsManager, getCpuManager, getMemoryManager, getDiskManager, getGpuManager } from '../../../shared/system/adapter.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeSysinfo(_args: string[]): Promise<void> {
+
   const [os, cpu, mem, disks, gpus] = await Promise.all([
     getOsManager().getInfo(),
     getCpuManager().getInfo(),
@@ -24,13 +26,24 @@ export async function handler(_args: string[]): Promise<void> {
   if (gpus.length > 0) {
     console.log(`GPU:        ${gpus[0].model} (${gpus[0].vramGB}GB)`)
   }
+
 }
 
-export const commandDef = {
-  name: 'sysinfo',
-  description: '系统详细信息',
-  handler,
-  helpText: '用法:\n  jc w sysinfo - 显示系统完整信息',
-  examples: ['jc w sysinfo'],
-  related: ['jc w host', 'jc w cpu', 'jc w meminfo', 'jc w disk'],
+export class SysinfoCommand extends Command {
+  name = "sysinfo"
+  description = "系统详细信息"
+  helpText = `用法:
+  ${this.bin} w sysinfo - 显示系统完整信息`
+  examples = [`${this.bin} w sysinfo`]
+  related = [`${this.bin} w host`, `${this.bin} w cpu`, `${this.bin} w meminfo`, `${this.bin} w disk`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeSysinfo(_args)
+  }
+}
+
+export const commandDef = new SysinfoCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

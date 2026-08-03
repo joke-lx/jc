@@ -1,7 +1,9 @@
 // src/groups/w/proc/ps.ts
 import { getProcessManager } from '../../../shared/system/adapter.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executePs(args: string[]): Promise<void> {
+
   const pm = getProcessManager()
   const filter = args.length > 0 ? args[0] : undefined
   const procs = await pm.listProcesses(filter)
@@ -19,13 +21,25 @@ export async function handler(args: string[]): Promise<void> {
   if (procs.length > 50) {
     console.log(`... 还有 ${procs.length - 50} 个进程`)
   }
+
 }
 
-export const commandDef = {
-  name: 'ps',
-  description: '查进程',
-  handler,
-  helpText: '用法:\n  jc w ps [无参]  - 列出全部进程\n  jc w ps <NAME>  - 按进程名过滤',
-  examples: ['jc w ps', 'jc w ps chrome'],
-  related: ['jc w p', 'jc w k', 'jc w kn', 'jc w top'],
+export class PsCommand extends Command {
+  name = "ps"
+  description = "查进程"
+  helpText = `用法:
+  ${this.bin} w ps [无参]  - 列出全部进程
+  ${this.bin} w ps <NAME>  - 按进程名过滤`
+  examples = [`${this.bin} w ps`, `${this.bin} w ps chrome`]
+  related = [`${this.bin} w p`, `${this.bin} w k`, `${this.bin} w kn`, `${this.bin} w top`]
+
+  async handler(args: string[]): Promise<void> {
+    return executePs(args)
+  }
+}
+
+export const commandDef = new PsCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

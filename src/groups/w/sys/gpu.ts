@@ -1,7 +1,9 @@
 // src/groups/w/sys/gpu.ts
 import { getGpuManager } from '../../../shared/system/adapter.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeGpu(_args: string[]): Promise<void> {
+
   const gpus = await getGpuManager().getInfo()
   if (gpus.length === 0) {
     console.log('未检测到 GPU')
@@ -15,12 +17,22 @@ export async function handler(_args: string[]): Promise<void> {
     console.log(`  显存:   ${g.vramGB}GB`)
     console.log('')
   }
+
 }
 
-export const commandDef = {
-  name: 'gpu',
-  description: 'GPU 信息',
-  handler,
-  examples: ['jc w gpu'],
-  related: ['jc w cpu', 'jc w sysinfo'],
+export class GpuCommand extends Command {
+  name = "gpu"
+  description = "GPU 信息"
+  examples = [`${this.bin} w gpu`]
+  related = [`${this.bin} w cpu`, `${this.bin} w sysinfo`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeGpu(_args)
+  }
+}
+
+export const commandDef = new GpuCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

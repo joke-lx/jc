@@ -1,7 +1,9 @@
 // src/groups/w/net/ip.ts
 import { getNetworkManager } from '../../../shared/system/adapter.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeIp(_args: string[]): Promise<void> {
+
   const net = await getNetworkManager().getNetworkInfo()
   console.log(`主机名: ${net.hostname}`)
   if (net.defaultGateway) console.log(`默认网关: ${net.defaultGateway}`)
@@ -13,12 +15,22 @@ export async function handler(_args: string[]): Promise<void> {
     console.log(`  MAC:  ${iface.mac || '-'}`)
     console.log('')
   }
+
 }
 
-export const commandDef = {
-  name: 'ip',
-  description: '网络接口信息 (IP/MAC)',
-  handler,
-  examples: ['jc w ip'],
-  related: ['jc w ip4', 'jc w mac', 'jc w wifi'],
+export class IpCommand extends Command {
+  name = "ip"
+  description = "网络接口信息 (IP/MAC)"
+  examples = [`${this.bin} w ip`]
+  related = [`${this.bin} w ip4`, `${this.bin} w mac`, `${this.bin} w wifi`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeIp(_args)
+  }
+}
+
+export const commandDef = new IpCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

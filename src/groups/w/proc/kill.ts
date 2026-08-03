@@ -1,8 +1,10 @@
 // src/groups/w/proc/kill.ts
 import { getProcessManager } from '../../../shared/system/adapter.js'
 import { error } from '../../../cli/output.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeKill(args: string[]): Promise<void> {
+
   if (args.length === 0) {
     console.error(error('❌ 请指定 PID'))
     process.exit(1)
@@ -19,13 +21,24 @@ export async function handler(args: string[]): Promise<void> {
     console.error(error(`❌ 终止失败: ${e.message}`))
     process.exit(2)
   }
+
 }
 
-export const commandDef = {
-  name: 'k',
-  description: '按 PID 杀进程',
-  handler,
-  helpText: '用法:\n  jc w k <PID>  - 强制结束指定 PID',
-  examples: ['jc w k 1234'],
-  related: ['jc w p', 'jc w pk', 'jc w kn', 'jc w ps'],
+export class KillCommand extends Command {
+  name = "k"
+  description = "按 PID 杀进程"
+  helpText = `用法:
+  ${this.bin} w k <PID>  - 强制结束指定 PID`
+  examples = [`${this.bin} w k 1234`]
+  related = [`${this.bin} w p`, `${this.bin} w pk`, `${this.bin} w kn`, `${this.bin} w ps`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeKill(args)
+  }
+}
+
+export const commandDef = new KillCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

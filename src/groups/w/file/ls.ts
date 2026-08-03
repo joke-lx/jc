@@ -1,8 +1,10 @@
 // src/groups/w/file/ls.ts
 import fs from 'fs'
 import path from 'path'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeLs(args: string[]): Promise<void> {
+
   const dir = args[0] || '.'
   try {
     const items = fs.readdirSync(dir, { withFileTypes: true })
@@ -22,12 +24,22 @@ export async function handler(args: string[]): Promise<void> {
   } catch (e: any) {
     console.error(`读取目录失败: ${e.message}`)
   }
+
 }
 
-export const commandDef = {
-  name: 'ls',
-  description: '列出目录内容',
-  handler,
-  examples: ['jc w ls', 'jc w ls C:\\'],
-  related: ['jc w pwd', 'jc w dtree', 'jc w find'],
+export class LsCommand extends Command {
+  name = "ls"
+  description = "列出目录内容"
+  examples = [`${this.bin} w ls`, `${this.bin} w ls C:\\\\`]
+  related = [`${this.bin} w pwd`, `${this.bin} w dtree`, `${this.bin} w find`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeLs(args)
+  }
+}
+
+export const commandDef = new LsCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

@@ -1,5 +1,6 @@
 // src/groups/mgr/add.ts
 import { spawnSync } from 'child_process'
+import { cliText } from '../../cli/output.js'
 import { error } from '../../cli/output.js'
 import { addItem, getItem } from '../../shared/registry/store.js'
 import { validateSource } from '../../shared/registry/validate.js'
@@ -114,8 +115,10 @@ function installAndLocate(installCmd: string, binName: string): { ok: true; exec
   const exec = out[0]!
   return { ok: true, exec }
 }
+import { Command } from '../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeAdd(args: string[]): Promise<void> {
+
   let parsed = parseArgs(args)
   // 缺参检测：常规模式要 kind+source+alias；install 模式要 kind+install+bin+alias。
   const incomplete = parsed.install
@@ -133,7 +136,7 @@ export async function handler(args: string[]): Promise<void> {
 
   if (incomplete) {
     if (!isInteractive()) {
-      console.error(error('用法: jc mgr add <npm|py|exe> <source> --alias <alias> [--desc <desc>]'))
+      console.error(error(cliText('用法: jc mgr add <npm|py|exe> <source> --alias <alias> [--desc <desc>]')))
       console.error(error('      jc mgr add <npm|py|exe> --install "<cmd>" --bin <name> --alias <alias>'))
       console.error(error('提示: 缺少参数且当前为非交互模式。'))
       process.exit(1)
@@ -151,7 +154,7 @@ export async function handler(args: string[]): Promise<void> {
 
   const { kind, source, alias, desc, install, bin } = parsed
   if (!kind || !alias) {
-    console.error(error('用法: jc mgr add <npm|py|exe> <source> --alias <alias>'))
+    console.error(error(cliText('用法: jc mgr add <npm|py|exe> <source> --alias <alias>')))
     process.exit(1)
   }
   if (!ALIAS_RE.test(alias)) { console.error(error(`alias 非法: ${alias}`)); process.exit(1) }
@@ -169,7 +172,7 @@ export async function handler(args: string[]): Promise<void> {
     finalSource = install
   } else {
     if (!source) {
-      console.error(error('用法: jc mgr add <npm|py|exe> <source> --alias <alias>'))
+      console.error(error(cliText('用法: jc mgr add <npm|py|exe> <source> --alias <alias>')))
       process.exit(1)
     }
     const v = await validateSource({ kind, source, alias: normalizedAlias, desc })
@@ -181,17 +184,22 @@ export async function handler(args: string[]): Promise<void> {
   const now = new Date().toISOString()
   addItem({ kind, source: finalSource, alias: normalizedAlias, desc, exec, createdAt: now, sourceVerifiedAt: now })
   console.log(`已注册: ${normalizedAlias} -> ${exec}`)
+
 }
 
-export const commandDef = {
-  name: 'add',
-  description: '注册一个 npm 包 / Python 脚本 / EXE 到统一管理器（支持 --install 模式）',
-  handler,
-  examples: [
-    'jc mgr add npm typescript --alias tsc',
-    'jc mgr add py --install "uv tool install sql-harness" --bin sql-harness --alias sh',
-    'jc mgr add npm --install "npm install -g typescript-language-server" --bin typescript-language-server --alias ts-ls',
-    'jc mgr add   # TTY 下逐步问',
-  ],
-  related: ['jc mgr list', 'jc mgr run'],
+export class AddCommand extends Command {
+  name = "add"
+  description = "注册一个 npm 包 / Python 脚本 / EXE 到统一管理器（支持 --install 模式）"
+  examples = [`${this.bin} mgr add npm typescript --alias tsc`, `${this.bin} mgr add py --install "uv tool install sql-harness" --bin sql-harness --alias sh`, `${this.bin} mgr add npm --install "npm install -g typescript-language-server" --bin typescript-language-server --alias ts-ls`, `${this.bin} mgr add   # TTY 下逐步问`]
+  related = [`${this.bin} mgr list`, `${this.bin} mgr run`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeAdd(args)
+  }
+}
+
+export const commandDef = new AddCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

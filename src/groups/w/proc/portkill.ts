@@ -1,10 +1,13 @@
 // src/groups/w/proc/portkill.ts
 import { getProcessManager } from '../../../shared/system/adapter.js'
+import { cliText } from '../../../cli/output.js'
 import { error, warning } from '../../../cli/output.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executePortkill(args: string[]): Promise<void> {
+
   if (args.length === 0 || args[0] === '--help' || args[0] === '?') {
-    console.log(`用法: jc w pk <PORT> [--soft|--list]`)
+    console.log(cliText(`用法: jc w pk <PORT> [--soft|--list]`))
     return
   }
   const port = parseInt(args[0], 10)
@@ -40,13 +43,26 @@ export async function handler(args: string[]): Promise<void> {
       console.error(warning(`⚠️ PID ${p.pid} 终止失败: ${e.message}`))
     }
   }
+
 }
 
-export const commandDef = {
-  name: 'pk',
-  description: '一键查并杀端口进程',
-  handler,
-  helpText: '用法:\n  jc w pk <PORT>     - 强制杀\n  jc w pk <PORT> --list - 只查不杀\n  jc w pk <PORT> --soft - 优雅终止',
-  examples: ['jc w pk 8080', 'jc w pk 3000 --list'],
-  related: ['jc w p', 'jc w k', 'jc w kn'],
+export class PortkillCommand extends Command {
+  name = "pk"
+  description = "一键查并杀端口进程"
+  helpText = `用法:
+  ${this.bin} w pk <PORT>     - 强制杀
+  ${this.bin} w pk <PORT> --list - 只查不杀
+  ${this.bin} w pk <PORT> --soft - 优雅终止`
+  examples = [`${this.bin} w pk 8080`, `${this.bin} w pk 3000 --list`]
+  related = [`${this.bin} w p`, `${this.bin} w k`, `${this.bin} w kn`]
+
+  async handler(args: string[]): Promise<void> {
+    return executePortkill(args)
+  }
+}
+
+export const commandDef = new PortkillCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

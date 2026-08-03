@@ -1,13 +1,25 @@
 // src/groups/w/tools/here.ts
 import open from 'open'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeHere(_args: string[]): Promise<void> {
+
   await open('.')
+
 }
 
-export const commandDef = {
-  name: 'here',
-  description: '打开当前目录',
-  handler,
-  examples: ['jc w here'],
+export class HereCommand extends Command {
+  name = "here"
+  description = "打开当前目录"
+  examples = [`${this.bin} w here`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeHere(_args)
+  }
+}
+
+export const commandDef = new HereCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

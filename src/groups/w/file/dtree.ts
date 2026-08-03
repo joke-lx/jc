@@ -21,17 +21,29 @@ function printTree(dir: string, prefix: string = ''): void {
     } catch { /* skip */ }
   }
 }
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeDtree(args: string[]): Promise<void> {
+
   const dir = args[0] || '.'
   console.log(dir)
   printTree(dir)
+
 }
 
-export const commandDef = {
-  name: 'dtree',
-  description: '目录树',
-  handler,
-  examples: ['jc w dtree', 'jc w dtree C:\\project'],
-  related: ['jc w ls', 'jc w find', 'jc w size'],
+export class DtreeCommand extends Command {
+  name = "dtree"
+  description = "目录树"
+  examples = [`${this.bin} w dtree`, `${this.bin} w dtree C:\\\\project`]
+  related = [`${this.bin} w ls`, `${this.bin} w find`, `${this.bin} w size`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeDtree(args)
+  }
+}
+
+export const commandDef = new DtreeCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

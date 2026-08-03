@@ -3,17 +3,20 @@
 // 不再做本地的 spawn / tokenization（已迁到 src/shared/registry/handlers/base.ts 的 ItemHandler.run）。
 // 本文件的失败路径走 console.error(error(...)) + process.exit(2)，保持 jc 整体退出码契约（0/1/2/3）。
 import { error } from '../../cli/output.js'
+import { cliText } from '../../cli/output.js'
 import { getItem, listItems } from '../../shared/registry/store.js'
 import { getHandler } from '../../shared/registry/handlers/index.js'
 import { isInteractive, prompt, NoTTYError } from '../../shared/registry/prompt.js'
+import { Command } from '../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeRun(args: string[]): Promise<void> {
+
   let [alias, ...rest] = args
 
   // argv 为空 或 alias 不在 registry → 交互选 alias。
   if (!alias || !getItem(alias.toLowerCase())) {
     if (!isInteractive()) {
-      console.error(error('用法: jc mgr run <alias> [args...]'))
+      console.error(error(cliText('用法: jc mgr run <alias> [args...]')))
       if (alias && !getItem(alias.toLowerCase())) {
         console.error(error(`未找到 alias: ${alias}`))
       } else {
@@ -53,12 +56,22 @@ export async function handler(args: string[]): Promise<void> {
     console.error(error((e as Error).message || String(e)))
     process.exit(2)
   }
+
 }
 
-export const commandDef = {
-  name: 'run',
-  description: '按别名执行已注册的项（缺 alias 时交互选择）',
-  handler,
-  examples: ['jc mgr run tsc --version', 'jc mgr run   # TTY 下选 alias'],
-  related: ['jc mgr add', 'jc mgr list'],
+export class RunCommand extends Command {
+  name = "run"
+  description = "按别名执行已注册的项（缺 alias 时交互选择）"
+  examples = [`${this.bin} mgr run tsc --version`, `${this.bin} mgr run   # TTY 下选 alias`]
+  related = [`${this.bin} mgr add`, `${this.bin} mgr list`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeRun(args)
+  }
+}
+
+export const commandDef = new RunCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

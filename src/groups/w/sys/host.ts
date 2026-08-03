@@ -1,14 +1,26 @@
 // src/groups/w/sys/host.ts
 import { getOsManager } from '../../../shared/system/adapter.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeHost(_args: string[]): Promise<void> {
+
   console.log(await getOsManager().getHostname())
+
 }
 
-export const commandDef = {
-  name: 'host',
-  description: '本机主机名',
-  handler,
-  examples: ['jc w host'],
-  related: ['jc w ip', 'jc w sysinfo'],
+export class HostCommand extends Command {
+  name = "host"
+  description = "本机主机名"
+  examples = [`${this.bin} w host`]
+  related = [`${this.bin} w ip`, `${this.bin} w sysinfo`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeHost(_args)
+  }
+}
+
+export const commandDef = new HostCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

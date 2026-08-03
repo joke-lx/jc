@@ -4,6 +4,7 @@
 // 设计动机：用户最常见的真实场景不是"我有目的地 check 一个"，而是"我刚切机，
 // 想看看哪些还能跑"。原版只能"提供 alias 才能用"——很糟糕。
 import { error } from '../../cli/output.js'
+import { cliText } from '../../cli/output.js'
 import { getItem, listItems, updateItemVerifiedAt } from '../../shared/registry/store.js'
 import { validateSource } from '../../shared/registry/validate.js'
 import { isInteractive, prompt, promptChoice, NoTTYError } from '../../shared/registry/prompt.js'
@@ -32,13 +33,15 @@ async function checkOne(alias: string): Promise<{ ok: boolean; reason?: string; 
   updateItemVerifiedAt(item.alias, new Date().toISOString())
   return { ok: true, exec: v.exec }
 }
+import { Command } from '../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeCheck(args: string[]): Promise<void> {
+
   let [alias] = args
 
   if (!alias) {
     if (!isInteractive()) {
-      console.error(error('用法: jc mgr check <alias>'))
+      console.error(error(cliText('用法: jc mgr check <alias>')))
       console.error(error('提示: 缺 alias 且当前为非交互模式。请提供 alias 或加 --yes 后跟值。'))
       process.exit(1)
     }
@@ -79,12 +82,22 @@ export async function handler(args: string[]): Promise<void> {
   const r = await checkOne(alias)
   if (!r.ok) { console.error(error(`${alias} 不可达: ${r.reason}`)); process.exit(2) }
   console.log(`OK: ${alias} (${r.exec})`)
+
 }
 
-export const commandDef = {
-  name: 'check',
-  description: '重新验证已注册项的源是否可达（无 alias 时交互选单个/全部）',
-  handler,
-  examples: ['jc mgr check tsc', 'jc mgr check   # TTY 下选单个/全部'],
-  related: ['jc mgr add', 'jc mgr list'],
+export class CheckCommand extends Command {
+  name = "check"
+  description = "重新验证已注册项的源是否可达（无 alias 时交互选单个/全部）"
+  examples = [`${this.bin} mgr check tsc`, `${this.bin} mgr check   # TTY 下选单个/全部`]
+  related = [`${this.bin} mgr add`, `${this.bin} mgr list`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeCheck(args)
+  }
+}
+
+export const commandDef = new CheckCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

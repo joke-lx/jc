@@ -1,13 +1,25 @@
 // src/groups/w/tools/wt.ts
 import open from 'open'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeWt(_args: string[]): Promise<void> {
+
   await open('wt')
+
 }
 
-export const commandDef = {
-  name: 'wt',
-  description: '打开 Windows Terminal',
-  handler,
-  examples: ['jc w wt'],
+export class WtCommand extends Command {
+  name = "wt"
+  description = "打开 Windows Terminal"
+  examples = [`${this.bin} w wt`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeWt(_args)
+  }
+}
+
+export const commandDef = new WtCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

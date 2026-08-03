@@ -1,11 +1,14 @@
 // src/groups/w/file/touch.ts
 import fs from 'fs'
+import { cliText } from '../../../cli/output.js'
 import path from 'path'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeTouch(args: string[]): Promise<void> {
+
   const file = args[0]
   if (!file) {
-    console.log('用法: jc w touch <file>')
+    console.log(cliText('用法: jc w touch <file>'))
     return
   }
   try {
@@ -24,12 +27,22 @@ export async function handler(args: string[]): Promise<void> {
   } catch (e: any) {
     console.error(`操作失败: ${e.message}`)
   }
+
 }
 
-export const commandDef = {
-  name: 'touch',
-  description: '创建空文件或更新文件时间戳',
-  handler,
-  examples: ['jc w touch ./newfile.txt'],
-  related: ['jc w mkdir', 'jc w del'],
+export class TouchCommand extends Command {
+  name = "touch"
+  description = "创建空文件或更新文件时间戳"
+  examples = [`${this.bin} w touch ./newfile.txt`]
+  related = [`${this.bin} w mkdir`, `${this.bin} w del`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeTouch(args)
+  }
+}
+
+export const commandDef = new TouchCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

@@ -1,5 +1,8 @@
 // src/groups/w/proc/mem.ts
-export async function handler(args: string[]): Promise<void> {
+import { Command } from '../../../cli/Command.js'
+
+async function executeMem(args: string[]): Promise<void> {
+
   const { getProcessManager } = await import('../../../shared/system/adapter.js')
   const pm = getProcessManager()
   const limit = parseInt(args[0], 10) || 20
@@ -10,13 +13,24 @@ export async function handler(args: string[]): Promise<void> {
     内存: `${p.memory}MB`,
     CPU: `${p.cpu}%`,
   })))
+
 }
 
-export const commandDef = {
-  name: 'mem',
-  description: '内存占用 Top20 (MB)',
-  handler,
-  helpText: '用法:\n  jc w mem [N]  - 内存降序前 N (默认 20)',
-  examples: ['jc w mem'],
-  related: ['jc w top', 'jc w ps', 'jc w psg'],
+export class MemCommand extends Command {
+  name = "mem"
+  description = "内存占用 Top20 (MB)"
+  helpText = `用法:
+  ${this.bin} w mem [N]  - 内存降序前 N (默认 20)`
+  examples = [`${this.bin} w mem`]
+  related = [`${this.bin} w top`, `${this.bin} w ps`, `${this.bin} w psg`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeMem(args)
+  }
+}
+
+export const commandDef = new MemCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

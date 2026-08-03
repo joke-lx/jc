@@ -4,8 +4,10 @@ import { execSync } from 'child_process'
 function requireWin() {
   if (process.platform !== 'win32') { console.error('❌ 此命令仅支持 Windows'); process.exit(3) }
 }
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeReg(args: string[]): Promise<void> {
+
   requireWin()
   const path = args[0] || 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'
   try {
@@ -13,13 +15,23 @@ export async function handler(args: string[]): Promise<void> {
   } catch {
     console.log(`路径不存在: ${path}`)
   }
+
 }
 
-export const commandDef = {
-  name: 'reg',
-  description: '查注册表项',
-  handler,
-  platform: 'win32' as const,
-  examples: ['jc w reg "HKCU\\Software\\..."'],
-  related: ['jc w regset', 'jc w regdel'],
+export class RegCommand extends Command {
+  name = "reg"
+  description = "查注册表项"
+  examples = [`${this.bin} w reg "HKCU\\\\Software\\\\..."`]
+  related = [`${this.bin} w regset`, `${this.bin} w regdel`]
+  platform = 'win32' as const
+
+  async handler(args: string[]): Promise<void> {
+    return executeReg(args)
+  }
+}
+
+export const commandDef = new RegCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

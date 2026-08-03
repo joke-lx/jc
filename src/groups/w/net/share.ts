@@ -1,7 +1,9 @@
 // src/groups/w/net/share.ts
 import { execSync } from 'child_process'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeShare(_args: string[]): Promise<void> {
+
   try {
     let output: string
     if (process.platform === 'win32') {
@@ -13,12 +15,22 @@ export async function handler(_args: string[]): Promise<void> {
   } catch (e: any) {
     console.error(`获取网络共享失败: ${e.message}`)
   }
+
 }
 
-export const commandDef = {
-  name: 'share',
-  description: '网络共享',
-  handler,
-  examples: ['jc w share'],
-  related: ['jc w ip', 'jc w proxy'],
+export class ShareCommand extends Command {
+  name = "share"
+  description = "网络共享"
+  examples = [`${this.bin} w share`]
+  related = [`${this.bin} w ip`, `${this.bin} w proxy`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeShare(_args)
+  }
+}
+
+export const commandDef = new ShareCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

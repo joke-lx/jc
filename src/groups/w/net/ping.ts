@@ -1,7 +1,9 @@
 // src/groups/w/net/ping.ts
 import { getNetworkManager } from '../../../shared/system/adapter.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executePing(args: string[]): Promise<void> {
+
   const host = args[0] || '127.0.0.1'
   console.log(`Pinging ${host}...`)
   const result = await getNetworkManager().ping(host)
@@ -10,12 +12,22 @@ export async function handler(args: string[]): Promise<void> {
   } else {
     console.log('超时或无响应')
   }
+
 }
 
-export const commandDef = {
-  name: 'ping',
-  description: 'Ping 主机',
-  handler,
-  examples: ['jc w ping google.com', 'jc w ping 8.8.8.8'],
-  related: ['jc w ns', 'jc w trace'],
+export class PingCommand extends Command {
+  name = "ping"
+  description = "Ping 主机"
+  examples = [`${this.bin} w ping google.com`, `${this.bin} w ping 8.8.8.8`]
+  related = [`${this.bin} w ns`, `${this.bin} w trace`]
+
+  async handler(args: string[]): Promise<void> {
+    return executePing(args)
+  }
+}
+
+export const commandDef = new PingCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

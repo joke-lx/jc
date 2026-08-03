@@ -1,8 +1,10 @@
 // src/groups/w/sys/powercfg.ts
 import { execSync } from 'child_process'
 import { error } from '../../../cli/output.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executePowercfg(_args: string[]): Promise<void> {
+
   if (process.platform !== 'win32') {
     console.log('powercfg 仅支持 Windows')
     return
@@ -18,12 +20,22 @@ export async function handler(_args: string[]): Promise<void> {
   } catch (e: any) {
     console.error(error(`电源报告生成失败: ${e.message}`))
   }
+
 }
 
-export const commandDef = {
-  name: 'powercfg',
-  description: '电源方案信息',
-  handler,
-  examples: ['jc w powercfg'],
-  related: ['jc w bat', 'jc w sysinfo'],
+export class PowercfgCommand extends Command {
+  name = "powercfg"
+  description = "电源方案信息"
+  examples = [`${this.bin} w powercfg`]
+  related = [`${this.bin} w bat`, `${this.bin} w sysinfo`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executePowercfg(_args)
+  }
+}
+
+export const commandDef = new PowercfgCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

@@ -1,13 +1,25 @@
 // src/groups/w/tools/taskmgr.ts
 import open from 'open'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeTaskmgr(_args: string[]): Promise<void> {
+
   await open('taskmgr')
+
 }
 
-export const commandDef = {
-  name: 'taskmgr',
-  description: '任务管理器',
-  handler,
-  examples: ['jc w taskmgr'],
+export class TaskmgrCommand extends Command {
+  name = "taskmgr"
+  description = "任务管理器"
+  examples = [`${this.bin} w taskmgr`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeTaskmgr(_args)
+  }
+}
+
+export const commandDef = new TaskmgrCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

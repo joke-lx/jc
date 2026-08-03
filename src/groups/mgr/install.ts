@@ -14,6 +14,7 @@
 //
 // 任意一步失败 → exit 2，不写 registry。
 import { error } from '../../cli/output.js'
+import { cliText } from '../../cli/output.js'
 
 interface ParsedArgs {
   cmd?: string
@@ -47,11 +48,13 @@ function parseArgs(args: string[]): ParsedArgs {
   }
   return out
 }
+import { Command } from '../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeInstall(args: string[]): Promise<void> {
+
   const p = parseArgs(args)
   if (!p.cmd || !p.bin || !p.alias) {
-    console.error(error('用法: jc mgr install --cmd "<install-cmd>" --bin <name> --alias <name> [--kind <npm|py|exe>] [--desc <text>]'))
+    console.error(error(cliText('用法: jc mgr install --cmd "<install-cmd>" --bin <name> --alias <name> [--kind <npm|py|exe>] [--desc <text>]')))
     process.exit(1)
   }
 
@@ -61,15 +64,22 @@ export async function handler(args: string[]): Promise<void> {
   const aliased: string[] = [p.kind, '--install', p.cmd, '--bin', p.bin, '--alias', p.alias]
   if (p.desc) aliased.push('--desc', p.desc)
   await addHandler(aliased)
+
 }
 
-export const commandDef = {
-  name: 'install',
-  description: '安装一个外部工具并注册为 alias（先跑 --cmd，再 which --bin）',
-  handler,
-  examples: [
-    'jc mgr install --cmd "uv tool install sql-harness" --bin sql-harness --alias sh',
-    'jc mgr install --cmd "npm install -g typescript-language-server" --bin typescript-language-server --alias ts-ls --kind npm',
-  ],
-  related: ['jc mgr add', 'jc mgr list'],
+export class InstallCommand extends Command {
+  name = "install"
+  description = "安装一个外部工具并注册为 alias（先跑 --cmd，再 which --bin）"
+  examples = [`${this.bin} mgr install --cmd "uv tool install sql-harness" --bin sql-harness --alias sh`, `${this.bin} mgr install --cmd "npm install -g typescript-language-server" --bin typescript-language-server --alias ts-ls --kind npm`]
+  related = [`${this.bin} mgr add`, `${this.bin} mgr list`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeInstall(args)
+  }
+}
+
+export const commandDef = new InstallCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

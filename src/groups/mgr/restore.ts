@@ -12,6 +12,7 @@
 //    不能盲目写空 exec，否则后续 run 直接炸。
 // 5. formatVersion 严格校验：未知版本直接拒绝，避免静默错位。
 import { existsSync, mkdirSync, writeFileSync, copyFileSync } from 'fs'
+import { cliText } from '../../cli/output.js'
 import { join, basename, dirname } from 'path'
 import { error, success, warning } from '../../cli/output.js'
 import { getRegistryPath, ensureRegistryDir } from '../../shared/registry/paths.js'
@@ -111,8 +112,10 @@ function planRestore(
   }
   return { imported, skipped, failed, wouldClear: mode === 'replace' }
 }
+import { Command } from '../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeRestore(args: string[]): Promise<void> {
+
   const initial = parseArgs(args)
   let parsed: ParsedArgs
   try {
@@ -123,7 +126,7 @@ export async function handler(args: string[]): Promise<void> {
   }
 
   if (!parsed.zipPath) {
-    console.error(error('用法: jc mgr restore <path.zip> [--dry-run | --merge | --replace]'))
+    console.error(error(cliText('用法: jc mgr restore <path.zip> [--dry-run | --merge | --replace]')))
     process.exit(1)
   }
 
@@ -232,17 +235,22 @@ export async function handler(args: string[]): Promise<void> {
   if (failed > 0) {
     console.log(warning('失败的项通常是本地源缺失；运行 jc mgr check <alias> 或 jc mgr add <alias> ... 修复'))
   }
+
 }
 
-export const commandDef = {
-  name: 'restore',
-  description: '从 zip 还原 registry（默认 skip；--merge 覆盖 / --replace 清空重建）',
-  handler,
-  examples: [
-    'jc mgr restore backup.zip',
-    'jc mgr restore backup.zip --dry-run',
-    'jc mgr restore backup.zip --merge',
-    'jc mgr restore backup.zip --replace',
-  ],
-  related: ['jc mgr backup', 'jc mgr import'],
+export class RestoreCommand extends Command {
+  name = "restore"
+  description = "从 zip 还原 registry（默认 skip；--merge 覆盖 / --replace 清空重建）"
+  examples = [`${this.bin} mgr restore backup.zip`, `${this.bin} mgr restore backup.zip --dry-run`, `${this.bin} mgr restore backup.zip --merge`, `${this.bin} mgr restore backup.zip --replace`]
+  related = [`${this.bin} mgr backup`, `${this.bin} mgr import`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeRestore(args)
+  }
+}
+
+export const commandDef = new RestoreCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

@@ -1,7 +1,9 @@
 // src/groups/w/sys/mon.ts
 import si from 'systeminformation'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeMon(_args: string[]): Promise<void> {
+
   try {
     const graphics = await si.graphics()
     const displays = graphics.displays || []
@@ -23,12 +25,22 @@ export async function handler(_args: string[]): Promise<void> {
   } catch {
     console.error('无法获取显示器信息')
   }
+
 }
 
-export const commandDef = {
-  name: 'mon',
-  description: '显示器信息',
-  handler,
-  examples: ['jc w mon'],
-  related: ['jc w gpu', 'jc w sysinfo'],
+export class MonCommand extends Command {
+  name = "mon"
+  description = "显示器信息"
+  examples = [`${this.bin} w mon`]
+  related = [`${this.bin} w gpu`, `${this.bin} w sysinfo`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeMon(_args)
+  }
+}
+
+export const commandDef = new MonCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

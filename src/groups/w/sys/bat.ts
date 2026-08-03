@@ -1,7 +1,9 @@
 // src/groups/w/sys/bat.ts
 import si from 'systeminformation'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(_args: string[]): Promise<void> {
+async function executeBat(_args: string[]): Promise<void> {
+
   try {
     const bat = await si.battery()
     if (!bat.hasBattery) {
@@ -20,12 +22,22 @@ export async function handler(_args: string[]): Promise<void> {
   } catch {
     console.error('无法获取电池信息（可能无电池设备）')
   }
+
 }
 
-export const commandDef = {
-  name: 'bat',
-  description: '电池状态',
-  handler,
-  examples: ['jc w bat'],
-  related: ['jc w sysinfo', 'jc w powercfg'],
+export class BatCommand extends Command {
+  name = "bat"
+  description = "电池状态"
+  examples = [`${this.bin} w bat`]
+  related = [`${this.bin} w sysinfo`, `${this.bin} w powercfg`]
+
+  async handler(_args: string[]): Promise<void> {
+    return executeBat(_args)
+  }
+}
+
+export const commandDef = new BatCommand()
+
+export async function handler(_args: string[]): Promise<void> {
+  return commandDef.handler(_args)
 }

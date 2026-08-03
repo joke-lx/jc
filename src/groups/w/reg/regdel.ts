@@ -4,8 +4,10 @@ import { execSync } from 'child_process'
 function requireWin() {
   if (process.platform !== 'win32') { console.error('❌ 此命令仅支持 Windows'); process.exit(3) }
 }
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeRegdel(args: string[]): Promise<void> {
+
   requireWin()
   const path = args[0]
   if (!path) { console.error('❌ 请指定注册表路径'); process.exit(1) }
@@ -16,11 +18,21 @@ export async function handler(args: string[]): Promise<void> {
   } else {
     console.log('已取消')
   }
+
 }
 
-export const commandDef = {
-  name: 'regdel',
-  description: '删注册表项',
-  handler,
-  platform: 'win32' as const,
+export class RegdelCommand extends Command {
+  name = "regdel"
+  description = "删注册表项"
+  platform = 'win32' as const
+
+  async handler(args: string[]): Promise<void> {
+    return executeRegdel(args)
+  }
+}
+
+export const commandDef = new RegdelCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }

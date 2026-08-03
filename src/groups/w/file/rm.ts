@@ -1,11 +1,14 @@
 // src/groups/w/file/rm.ts
 import fs from 'fs'
+import { cliText } from '../../../cli/output.js'
 import { confirm } from '../../../shared/registry/confirm.js'
+import { Command } from '../../../cli/Command.js'
 
-export async function handler(args: string[]): Promise<void> {
+async function executeRm(args: string[]): Promise<void> {
+
   const dir = args[0]
   if (!dir) {
-    console.log('用法: jc w rm <directory>')
+    console.log(cliText('用法: jc w rm <directory>'))
     return
   }
   try {
@@ -23,12 +26,22 @@ export async function handler(args: string[]): Promise<void> {
   } catch (e: any) {
     console.error(`删除失败: ${e.message}`)
   }
+
 }
 
-export const commandDef = {
-  name: 'rm',
-  description: '删除目录 (含确认提示)',
-  handler,
-  examples: ['jc w rm ./node_modules'],
-  related: ['jc w del', 'jc w mkdir'],
+export class RmCommand extends Command {
+  name = "rm"
+  description = "删除目录 (含确认提示)"
+  examples = [`${this.bin} w rm ./node_modules`]
+  related = [`${this.bin} w del`, `${this.bin} w mkdir`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeRm(args)
+  }
+}
+
+export const commandDef = new RmCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
 }
