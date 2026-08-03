@@ -14,6 +14,6 @@ description: 在新增、修改、测试或评审 `jc` CLI 及其命令时使用
 | 新增测试、修改测试或在 CI/本地断言新行为 | [[testing-and-verification]] | references/testing-and-verification.md | 项目未配置 lint、format、coverage 与 `tsc --noEmit`。 |
 | 修改 workflow、排查发布失败，或为新维护者讲解发布流程 | [[release-and-publishing]] | references/release-and-publishing.md | 通用模式请同时加载 `.claude/skills/gh-action/references/npm-publish.md`。 |
 | 评审 PR，或在提 PR 前做自检 | [[review-checklist-and-examples]] | references/review-checklist-and-examples.md | 交叉参考汇总，仅在评审时加载。 |
-| 涉及 `jc mgr` 组的注册、迁移与跨设备同步；需要了解 XDG 注册表位置、item schema 或 `confirm()` helper | [[registry-and-managed-items]] | references/registry-and-managed-items.md | 新功能；与现有 reference 互补。 |
+| 涉及 `jc mgr` 组的注册、别名、迁移与跨设备同步；需要了解 XDG 注册表位置、item schema、cname 别名机制或 `confirm()` helper | [[registry-and-managed-items]] | references/registry-and-managed-items.md | 与现有 reference 互补。 |
 
 按当前任务匹配触发条件加载对应 reference；不要加载集合之外的 reference。
