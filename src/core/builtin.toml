@@ -1,0 +1,26 @@
+# src/core/builtin.toml
+# 声明式命令注册表（阶段 3 迁移 metadata 后填充）。
+#
+# schema 见 docs/specs/2026-08-04-jc-toml-design.md：
+#   [[command]]
+#   name = "kill"
+#   group = "w"
+#   description = "按 PID 杀进程"
+#   helpText = "用法:\n  {cli} w k <PID>  - 强制结束指定 PID"
+#   examples = ["{cli} w k 1234"]
+#   params = [{ name = "pid", type = "int", required = true }]
+#   hook = "proc.kill"
+#   danger = "destructive"
+#   platform = ["win32"]
+#
+#   [[command]]
+#   name = "run"
+#   group = "claude"
+#   description = "启动 Claude Code"
+#   examples = ["{cli} c run"]
+#   hook = "spawn"
+#   with = { bin = "claude", args = ["{{@rest}}"] }
+#   danger = "safe"
+#
+# 阶段 2 为空占位：内核（capabilities / dispatch / toml）先建好并测试，
+# 阶段 3-4 把 111 条现有命令的 metadata 迁进来。
