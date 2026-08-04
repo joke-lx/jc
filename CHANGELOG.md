@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0](https://github.com/joke-lx/jc/compare/v0.4.0...v0.5.0) (2026-08-04)
+
+
+### Features
+
+* **core:** declarative command kernel — Capability + dispatch + TOML ([6717449](https://github.com/joke-lx/jc/commit/67174498a1502038e04e7387204d67db9e0774cf))
+* **mgr:** backfill files missed in cname commit ([e2dbf88](https://github.com/joke-lx/jc/commit/e2dbf88d12707ecd4f3f6f3defd7e5c8328888d6))
+* **mgr:** cname alias + meta + cliText helpText rendering ([eea345e](https://github.com/joke-lx/jc/commit/eea345e176a2acebf0d758112fdd3736285f6eb2))
+
 ## [0.4.0](https://github.com/joke-lx/jc/compare/v0.3.2...v0.4.0) (2026-08-02)
 
 
