@@ -1,7 +1,9 @@
-// src/groups/w/file/find.ts
-import fs from 'fs'
+import { Command } from '../../../cli/Command.js'
 import { cliText } from '../../../cli/output.js'
+import fs from 'fs'
 import path from 'path'
+
+// src/groups/w/file/find.ts
 
 function searchDir(dir: string, pattern: string, results: string[]): void {
   try {
@@ -20,7 +22,6 @@ function searchDir(dir: string, pattern: string, results: string[]): void {
     }
   } catch { /* skip unreadable */ }
 }
-import { Command } from '../../../cli/Command.js'
 
 async function executeFind(args: string[]): Promise<void> {
 

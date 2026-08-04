@@ -1,6 +1,7 @@
-// src/groups/w/user/who.ts
-import os from 'os'
 import { Command } from '../../../cli/Command.js'
+import os from 'os'
+
+// src/groups/w/user/who.ts
 
 async function executeWho(_args: string[]): Promise<void> {
 

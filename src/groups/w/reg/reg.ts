@@ -1,10 +1,11 @@
-// src/groups/w/reg/reg.ts
+import { Command } from '../../../cli/Command.js'
 import { execSync } from 'child_process'
+
+// src/groups/w/reg/reg.ts
 
 function requireWin() {
   if (process.platform !== 'win32') { console.error('❌ 此命令仅支持 Windows'); process.exit(3) }
 }
-import { Command } from '../../../cli/Command.js'
 
 async function executeReg(args: string[]): Promise<void> {
 

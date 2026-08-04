@@ -1,6 +1,7 @@
-// src/groups/w/tools/perfmon.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/perfmon.ts
 
 async function executePerfmon(_args: string[]): Promise<void> {
 

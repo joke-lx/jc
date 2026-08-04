@@ -1,6 +1,7 @@
-// src/groups/w/wsl/wsl.ts
-import { execSync } from 'child_process'
 import { Command } from '../../../cli/Command.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/wsl/wsl.ts
 
 async function executeWsl(_args: string[]): Promise<void> {
 

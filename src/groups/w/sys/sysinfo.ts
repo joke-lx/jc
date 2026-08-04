@@ -1,6 +1,7 @@
-// src/groups/w/sys/sysinfo.ts
-import { getOsManager, getCpuManager, getMemoryManager, getDiskManager, getGpuManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getOsManager, getCpuManager, getMemoryManager, getDiskManager, getGpuManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/sys/sysinfo.ts
 
 async function executeSysinfo(_args: string[]): Promise<void> {
 

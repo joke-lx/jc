@@ -1,5 +1,6 @@
-// src/groups/w/file/cd.ts
 import { Command } from '../../../cli/Command.js'
+
+// src/groups/w/file/cd.ts
 
 async function executeCd(args: string[]): Promise<void> {
 

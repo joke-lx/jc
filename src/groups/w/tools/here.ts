@@ -1,6 +1,7 @@
-// src/groups/w/tools/here.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/here.ts
 
 async function executeHere(_args: string[]): Promise<void> {
 

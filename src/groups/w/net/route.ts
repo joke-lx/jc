@@ -1,6 +1,7 @@
-// src/groups/w/net/route.ts
-import { execSync } from 'child_process'
 import { Command } from '../../../cli/Command.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/net/route.ts
 
 async function executeRoute(_args: string[]): Promise<void> {
 

@@ -1,6 +1,7 @@
-// src/groups/w/tools/msconfig.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/msconfig.ts
 
 async function executeMsconfig(_args: string[]): Promise<void> {
 

@@ -1,5 +1,6 @@
-// src/groups/w/file/pwd.ts
 import { Command } from '../../../cli/Command.js'
+
+// src/groups/w/file/pwd.ts
 
 async function executePwd(_args: string[]): Promise<void> {
 

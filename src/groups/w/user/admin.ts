@@ -1,6 +1,7 @@
-// src/groups/w/user/admin.ts
-import { execSync } from 'child_process'
 import { Command } from '../../../cli/Command.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/user/admin.ts
 
 async function executeAdmin(_args: string[]): Promise<void> {
 

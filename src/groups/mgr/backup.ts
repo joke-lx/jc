@@ -1,3 +1,14 @@
+import { Command } from '../../cli/Command.js'
+import { cliText } from '../../cli/output.js'
+import { error, success, warning } from '../../cli/output.js'
+import { buildManifest } from '../../shared/backup/manifest.js'
+import type { ManifestItem } from '../../shared/backup/manifest.js'
+import { createZip, writeZip, toZipPath } from '../../shared/backup/zip.js'
+import { readRegistry } from '../../shared/registry/store.js'
+import { existsSync, statSync } from 'fs'
+import { dirname } from 'path'
+import { createInterface } from 'readline'
+
 // src/groups/mgr/backup.ts
 // 把当前 registry 打包成 zip；可选 --include-local 把 exec 指向的本机文件一并塞进去。
 //
@@ -7,15 +18,6 @@
 //    避免不知不觉把私人 exe / 脚本拷进 zip（用户刚强调过隐私）。
 // 3. zip 内必须有 manifest.json：用户从 zip 内容里就能审计"什么文件被拷了"。
 // 4. 错误：zip 路径不存在父目录 / 写失败 / 文件不存在 → exit 2。
-import { createInterface } from 'readline'
-import { cliText } from '../../cli/output.js'
-import { existsSync, statSync } from 'fs'
-import { dirname } from 'path'
-import { error, success, warning } from '../../cli/output.js'
-import { readRegistry } from '../../shared/registry/store.js'
-import { buildManifest } from '../../shared/backup/manifest.js'
-import { createZip, writeZip, toZipPath } from '../../shared/backup/zip.js'
-import type { ManifestItem } from '../../shared/backup/manifest.js'
 
 const PKG_VERSION = '0.2.0'
 
@@ -56,7 +58,6 @@ function askYesNo(question: string): Promise<boolean> {
     })
   })
 }
-import { Command } from '../../cli/Command.js'
 
 async function executeBackup(args: string[]): Promise<void> {
 

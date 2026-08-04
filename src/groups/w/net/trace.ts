@@ -1,7 +1,8 @@
-// src/groups/w/net/trace.ts
-import { getNetworkManager } from '../../../shared/system/adapter.js'
-import { cliText } from '../../../cli/output.js'
 import { Command } from '../../../cli/Command.js'
+import { cliText } from '../../../cli/output.js'
+import { getNetworkManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/net/trace.ts
 
 async function executeTrace(args: string[]): Promise<void> {
 

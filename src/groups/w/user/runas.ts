@@ -1,6 +1,7 @@
-// src/groups/w/user/runas.ts
-import { execSync } from 'child_process'
 import { Command } from '../../../cli/Command.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/user/runas.ts
 
 async function executeRunas(_args: string[]): Promise<void> {
 

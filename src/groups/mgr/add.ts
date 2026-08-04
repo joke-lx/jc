@@ -1,11 +1,13 @@
-// src/groups/mgr/add.ts
-import { spawnSync } from 'child_process'
+import { Command } from '../../cli/Command.js'
 import { cliText } from '../../cli/output.js'
 import { error } from '../../cli/output.js'
-import { addItem, getItem } from '../../shared/registry/store.js'
-import { validateSource } from '../../shared/registry/validate.js'
-import { ALIAS_RE, type RegistryItemKind } from '../../shared/registry/types.js'
 import { isInteractive, prompt, NoTTYError } from '../../shared/registry/prompt.js'
+import { addItem, getItem } from '../../shared/registry/store.js'
+import { ALIAS_RE, type RegistryItemKind } from '../../shared/registry/types.js'
+import { validateSource } from '../../shared/registry/validate.js'
+import { spawnSync } from 'child_process'
+
+// src/groups/mgr/add.ts
 
 const VALID_KINDS: RegistryItemKind[] = ['npm', 'py', 'exe']
 
@@ -74,7 +76,7 @@ async function collectInteractive(current: ParsedArgs): Promise<Required<ParsedA
   }
 
   if (useInstall) {
-    if (!install) install = await prompt('安装命令? (如: uv tool install sql-harness): ')
+    if (!install) install = await prompt('安装命令? (如: uv tool install <pkg>): ')
     if (!bin) bin = await prompt('bin 名? (安装后要定位的可执行名): ')
   } else {
     if (!source) source = await prompt('source? (npm 包名 / URL / 本地路径): ')
@@ -115,7 +117,6 @@ function installAndLocate(installCmd: string, binName: string): { ok: true; exec
   const exec = out[0]!
   return { ok: true, exec }
 }
-import { Command } from '../../cli/Command.js'
 
 async function executeAdd(args: string[]): Promise<void> {
 
@@ -190,7 +191,7 @@ async function executeAdd(args: string[]): Promise<void> {
 export class AddCommand extends Command {
   name = "add"
   description = "注册一个 npm 包 / Python 脚本 / EXE 到统一管理器（支持 --install 模式）"
-  examples = [`${this.bin} mgr add npm typescript --alias tsc`, `${this.bin} mgr add py --install "uv tool install sql-harness" --bin sql-harness --alias sh`, `${this.bin} mgr add npm --install "npm install -g typescript-language-server" --bin typescript-language-server --alias ts-ls`, `${this.bin} mgr add   # TTY 下逐步问`]
+  examples = [`${this.bin} mgr add npm typescript --alias tsc`, `${this.bin} mgr add py --install "uv tool install <pkg>" --bin <exec> --alias <alias>`, `${this.bin} mgr add npm --install "npm install -g <pkg>" --bin <exec> --alias <alias>`, `${this.bin} mgr add   # TTY 下逐步问`]
   related = [`${this.bin} mgr list`, `${this.bin} mgr run`]
 
   async handler(args: string[]): Promise<void> {

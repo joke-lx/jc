@@ -1,6 +1,7 @@
-// src/groups/w/net/ip.ts
-import { getNetworkManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getNetworkManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/net/ip.ts
 
 async function executeIp(_args: string[]): Promise<void> {
 

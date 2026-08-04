@@ -1,6 +1,7 @@
-// src/groups/w/pwr/sleep.ts
-import { execSync } from 'child_process'
 import { Command } from '../../../cli/Command.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/pwr/sleep.ts
 
 async function executeSleep(_args: string[]): Promise<void> {
 

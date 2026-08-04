@@ -1,3 +1,11 @@
+import { Command } from '../../cli/Command.js'
+import { error, success, warning, cliText } from '../../cli/output.js'
+import { getRegistryPath, ensureRegistryDir } from '../../shared/registry/paths.js'
+import { isInteractive, prompt, NoTTYError } from '../../shared/registry/prompt.js'
+import { readRegistry } from '../../shared/registry/store.js'
+import { existsSync, mkdirSync, writeFileSync } from 'fs'
+import { dirname, join } from 'path'
+
 // src/groups/mgr/config.ts
 // 显示与初始化 registry 位置。
 //
@@ -5,12 +13,6 @@
 // 改 JC 自己的配置文件会把"env 变量 / config 文件 / 默认平台路径"三条入口变复杂，
 // 增加了回归点。本任务的需求是"用户想知道当前路径 + 在自定义位置初始化一个空 registry"，
 // 不需要"运行时改默认位置"。后者交给 JC_REGISTRY_PATH env 变量即可（见 paths.ts）。
-import { existsSync, mkdirSync, writeFileSync } from 'fs'
-import { dirname, join } from 'path'
-import { error, success, warning, cliText } from '../../cli/output.js'
-import { getRegistryPath, ensureRegistryDir } from '../../shared/registry/paths.js'
-import { readRegistry } from '../../shared/registry/store.js'
-import { isInteractive, prompt, NoTTYError } from '../../shared/registry/prompt.js'
 
 interface ParsedArgs {
   action: 'path' | 'init'
@@ -111,7 +113,6 @@ async function actionInit(targetDir: string | undefined): Promise<void> {
   // 留 ensureRegistryDir 给其他模块用即可。
   void ensureRegistryDir
 }
-import { Command } from '../../cli/Command.js'
 
 async function executeConfig(args: string[]): Promise<void> {
 

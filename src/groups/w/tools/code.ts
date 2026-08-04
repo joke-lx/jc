@@ -1,6 +1,7 @@
-// src/groups/w/tools/code.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/code.ts
 
 async function executeCode(_args: string[]): Promise<void> {
 

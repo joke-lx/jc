@@ -1,7 +1,8 @@
-// src/groups/w/proc/kill.ts
-import { getProcessManager } from '../../../shared/system/adapter.js'
-import { error } from '../../../cli/output.js'
 import { Command } from '../../../cli/Command.js'
+import { error } from '../../../cli/output.js'
+import { getProcessManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/proc/kill.ts
 
 async function executeKill(args: string[]): Promise<void> {
 

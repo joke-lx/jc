@@ -1,6 +1,7 @@
-// src/groups/w/net/wifipwd.ts
-import { getNetworkManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getNetworkManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/net/wifipwd.ts
 
 async function executeWifipwd(_args: string[]): Promise<void> {
 

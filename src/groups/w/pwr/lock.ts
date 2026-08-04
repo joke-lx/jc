@@ -1,6 +1,7 @@
-// src/groups/w/pwr/lock.ts
-import { execSync } from 'child_process'
 import { Command } from '../../../cli/Command.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/pwr/lock.ts
 
 async function executeLock(_args: string[]): Promise<void> {
 

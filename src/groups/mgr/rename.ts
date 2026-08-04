@@ -1,11 +1,12 @@
-// src/groups/mgr/rename.ts
+import { Command } from '../../cli/Command.js'
 import { error } from '../../cli/output.js'
 import { cliText } from '../../cli/output.js'
-import { ALIAS_RE } from '../../shared/registry/types.js'
 import { confirm } from '../../shared/registry/confirm.js'
-import { getItem, listItems, renameItem } from '../../shared/registry/store.js'
 import { isInteractive, prompt, NoTTYError } from '../../shared/registry/prompt.js'
-import { Command } from '../../cli/Command.js'
+import { getItem, listItems, renameItem } from '../../shared/registry/store.js'
+import { ALIAS_RE } from '../../shared/registry/types.js'
+
+// src/groups/mgr/rename.ts
 
 async function executeRename(args: string[]): Promise<void> {
 

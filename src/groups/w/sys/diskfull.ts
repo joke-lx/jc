@@ -1,6 +1,7 @@
-// src/groups/w/sys/diskfull.ts
-import { getDiskManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getDiskManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/sys/diskfull.ts
 
 async function executeDiskfull(_args: string[]): Promise<void> {
 

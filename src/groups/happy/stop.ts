@@ -1,5 +1,6 @@
-import { execSync } from 'child_process'
 import { Command } from '../../cli/Command.js'
+import { execSync } from 'child_process'
+
 
 async function executeStop(_args: string[]): Promise<void> {
 

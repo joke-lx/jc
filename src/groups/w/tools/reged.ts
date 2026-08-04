@@ -1,6 +1,7 @@
-// src/groups/w/tools/reged.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/reged.ts
 
 async function executeReged(_args: string[]): Promise<void> {
 

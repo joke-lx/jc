@@ -1,13 +1,14 @@
+import { Command } from '../../cli/Command.js'
+import { error } from '../../cli/output.js'
+import { cliText } from '../../cli/output.js'
+import { getHandler } from '../../shared/registry/handlers/index.js'
+import { isInteractive, prompt, NoTTYError } from '../../shared/registry/prompt.js'
+import { getItem, listItems } from '../../shared/registry/store.js'
+
 // src/groups/mgr/run.ts
 // mgr 组的 `run` 命令 handler：按 alias 查找 → preflight 源检查 → handler.run 真正执行。
 // 不再做本地的 spawn / tokenization（已迁到 src/shared/registry/handlers/base.ts 的 ItemHandler.run）。
 // 本文件的失败路径走 console.error(error(...)) + process.exit(2)，保持 jc 整体退出码契约（0/1/2/3）。
-import { error } from '../../cli/output.js'
-import { cliText } from '../../cli/output.js'
-import { getItem, listItems } from '../../shared/registry/store.js'
-import { getHandler } from '../../shared/registry/handlers/index.js'
-import { isInteractive, prompt, NoTTYError } from '../../shared/registry/prompt.js'
-import { Command } from '../../cli/Command.js'
 
 async function executeRun(args: string[]): Promise<void> {
 

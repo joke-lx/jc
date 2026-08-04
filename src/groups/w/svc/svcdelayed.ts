@@ -1,6 +1,7 @@
-// src/groups/w/svc/svcdelayed.ts
-import { execSync } from 'child_process'
 import { Command } from '../../../cli/Command.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/svc/svcdelayed.ts
 
 async function executeSvcdelayed(args: string[]): Promise<void> {
 

@@ -1,6 +1,7 @@
-// src/groups/w/tools/gpedit.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/gpedit.ts
 
 async function executeGpedit(_args: string[]): Promise<void> {
 

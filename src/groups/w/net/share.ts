@@ -1,6 +1,7 @@
-// src/groups/w/net/share.ts
-import { execSync } from 'child_process'
 import { Command } from '../../../cli/Command.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/net/share.ts
 
 async function executeShare(_args: string[]): Promise<void> {
 

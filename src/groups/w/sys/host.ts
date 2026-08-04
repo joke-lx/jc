@@ -1,6 +1,7 @@
-// src/groups/w/sys/host.ts
-import { getOsManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getOsManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/sys/host.ts
 
 async function executeHost(_args: string[]): Promise<void> {
 

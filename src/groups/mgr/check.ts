@@ -1,13 +1,15 @@
+import { Command } from '../../cli/Command.js'
+import { error } from '../../cli/output.js'
+import { cliText } from '../../cli/output.js'
+import { isInteractive, prompt, promptChoice, NoTTYError } from '../../shared/registry/prompt.js'
+import { getItem, listItems, updateItemVerifiedAt } from '../../shared/registry/store.js'
+import { validateSource } from '../../shared/registry/validate.js'
+
 // src/groups/mgr/check.ts
 // 重写以支持"无 alias → 单/全选 → 全选批量检查 → 失败项问重试"。
 //
 // 设计动机：用户最常见的真实场景不是"我有目的地 check 一个"，而是"我刚切机，
 // 想看看哪些还能跑"。原版只能"提供 alias 才能用"——很糟糕。
-import { error } from '../../cli/output.js'
-import { cliText } from '../../cli/output.js'
-import { getItem, listItems, updateItemVerifiedAt } from '../../shared/registry/store.js'
-import { validateSource } from '../../shared/registry/validate.js'
-import { isInteractive, prompt, promptChoice, NoTTYError } from '../../shared/registry/prompt.js'
 
 type Scope = 'one' | 'all'
 
@@ -33,7 +35,6 @@ async function checkOne(alias: string): Promise<{ ok: boolean; reason?: string; 
   updateItemVerifiedAt(item.alias, new Date().toISOString())
   return { ok: true, exec: v.exec }
 }
-import { Command } from '../../cli/Command.js'
 
 async function executeCheck(args: string[]): Promise<void> {
 

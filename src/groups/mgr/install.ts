@@ -1,3 +1,7 @@
+import { Command } from '../../cli/Command.js'
+import { error } from '../../cli/output.js'
+import { cliText } from '../../cli/output.js'
+
 // src/groups/mgr/install.ts
 // mgr install 命令：先跑安装命令，再定位 bin，最后注册为 alias。
 // 设计动机：让 "uv tool install xxx / pip install xxx / npm i -g xxx + 别名" 这种
@@ -13,8 +17,6 @@
 //   --yes                 跳过交互确认（当前实现无交互，无需 --yes；保留供将来扩展）
 //
 // 任意一步失败 → exit 2，不写 registry。
-import { error } from '../../cli/output.js'
-import { cliText } from '../../cli/output.js'
 
 interface ParsedArgs {
   cmd?: string
@@ -48,7 +50,6 @@ function parseArgs(args: string[]): ParsedArgs {
   }
   return out
 }
-import { Command } from '../../cli/Command.js'
 
 async function executeInstall(args: string[]): Promise<void> {
 
@@ -70,7 +71,7 @@ async function executeInstall(args: string[]): Promise<void> {
 export class InstallCommand extends Command {
   name = "install"
   description = "安装一个外部工具并注册为 alias（先跑 --cmd，再 which --bin）"
-  examples = [`${this.bin} mgr install --cmd "uv tool install sql-harness" --bin sql-harness --alias sh`, `${this.bin} mgr install --cmd "npm install -g typescript-language-server" --bin typescript-language-server --alias ts-ls --kind npm`]
+  examples = [`${this.bin} mgr install --cmd "uv tool install <pkg>" --bin <exec> --alias <alias>`, `${this.bin} mgr install --cmd "npm install -g <pkg>" --bin <exec> --alias <alias> --kind npm`]
   related = [`${this.bin} mgr add`, `${this.bin} mgr list`]
 
   async handler(args: string[]): Promise<void> {

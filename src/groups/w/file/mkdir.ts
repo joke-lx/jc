@@ -1,7 +1,8 @@
-// src/groups/w/file/mkdir.ts
-import fs from 'fs'
-import { cliText } from '../../../cli/output.js'
 import { Command } from '../../../cli/Command.js'
+import { cliText } from '../../../cli/output.js'
+import fs from 'fs'
+
+// src/groups/w/file/mkdir.ts
 
 async function executeMkdir(args: string[]): Promise<void> {
 

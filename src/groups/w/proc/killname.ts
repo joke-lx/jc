@@ -1,7 +1,8 @@
-// src/groups/w/proc/killname.ts
-import { getProcessManager } from '../../../shared/system/adapter.js'
-import { error, warning } from '../../../cli/output.js'
 import { Command } from '../../../cli/Command.js'
+import { error, warning } from '../../../cli/output.js'
+import { getProcessManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/proc/killname.ts
 
 async function executeKillname(args: string[]): Promise<void> {
 

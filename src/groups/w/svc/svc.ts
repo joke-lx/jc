@@ -1,6 +1,7 @@
-// src/groups/w/svc/svc.ts
-import si from 'systeminformation'
 import { Command } from '../../../cli/Command.js'
+import si from 'systeminformation'
+
+// src/groups/w/svc/svc.ts
 
 async function executeSvc(args: string[]): Promise<void> {
 

@@ -1,11 +1,12 @@
-// src/groups/w/reg/regset.ts
-import { execSync } from 'child_process'
+import { Command } from '../../../cli/Command.js'
 import { cliText } from '../../../cli/output.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/reg/regset.ts
 
 function requireWin() {
   if (process.platform !== 'win32') { console.error('❌ 此命令仅支持 Windows'); process.exit(3) }
 }
-import { Command } from '../../../cli/Command.js'
 
 async function executeRegset(args: string[]): Promise<void> {
 

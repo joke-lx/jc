@@ -1,7 +1,8 @@
-// src/groups/w/net/wifiexp.ts
-import { execSync } from 'child_process'
-import { error } from '../../../cli/output.js'
 import { Command } from '../../../cli/Command.js'
+import { error } from '../../../cli/output.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/net/wifiexp.ts
 
 async function executeWifiexp(_args: string[]): Promise<void> {
 

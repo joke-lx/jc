@@ -1,6 +1,7 @@
-// src/groups/w/sys/cpu.ts
-import { getCpuManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getCpuManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/sys/cpu.ts
 
 async function executeCpu(_args: string[]): Promise<void> {
 

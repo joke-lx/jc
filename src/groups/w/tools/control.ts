@@ -1,6 +1,7 @@
-// src/groups/w/tools/control.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/control.ts
 
 async function executeControl(_args: string[]): Promise<void> {
 

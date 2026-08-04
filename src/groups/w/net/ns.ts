@@ -1,7 +1,8 @@
-// src/groups/w/net/ns.ts
-import { execSync } from 'child_process'
-import { cliText } from '../../../cli/output.js'
 import { Command } from '../../../cli/Command.js'
+import { cliText } from '../../../cli/output.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/net/ns.ts
 
 async function executeNs(args: string[]): Promise<void> {
 

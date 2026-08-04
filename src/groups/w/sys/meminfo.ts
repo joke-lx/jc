@@ -1,6 +1,7 @@
-// src/groups/w/sys/meminfo.ts
-import { getMemoryManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getMemoryManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/sys/meminfo.ts
 
 async function executeMeminfo(_args: string[]): Promise<void> {
 

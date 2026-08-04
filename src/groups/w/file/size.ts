@@ -1,7 +1,9 @@
-// src/groups/w/file/size.ts
+import { Command } from '../../../cli/Command.js'
 import { getDiskManager } from '../../../shared/system/adapter.js'
 import fs from 'fs'
 import path from 'path'
+
+// src/groups/w/file/size.ts
 
 function getDirSize(dir: string): number {
   let total = 0
@@ -28,7 +30,6 @@ function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`
 }
-import { Command } from '../../../cli/Command.js'
 
 async function executeSize(args: string[]): Promise<void> {
 

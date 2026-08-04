@@ -1,10 +1,11 @@
-// src/groups/mgr/rm.ts
+import { Command } from '../../cli/Command.js'
 import { error } from '../../cli/output.js'
 import { cliText } from '../../cli/output.js'
 import { confirm } from '../../shared/registry/confirm.js'
-import { getItem, listItems, removeItem } from '../../shared/registry/store.js'
 import { isInteractive, prompt, NoTTYError } from '../../shared/registry/prompt.js'
-import { Command } from '../../cli/Command.js'
+import { getItem, listItems, removeItem } from '../../shared/registry/store.js'
+
+// src/groups/mgr/rm.ts
 
 async function executeRm(args: string[]): Promise<void> {
 

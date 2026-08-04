@@ -1,8 +1,9 @@
-// src/groups/w/proc/portkill.ts
-import { getProcessManager } from '../../../shared/system/adapter.js'
+import { Command } from '../../../cli/Command.js'
 import { cliText } from '../../../cli/output.js'
 import { error, warning } from '../../../cli/output.js'
-import { Command } from '../../../cli/Command.js'
+import { getProcessManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/proc/portkill.ts
 
 async function executePortkill(args: string[]): Promise<void> {
 

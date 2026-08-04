@@ -1,7 +1,8 @@
-// src/groups/w/sys/powercfg.ts
-import { execSync } from 'child_process'
-import { error } from '../../../cli/output.js'
 import { Command } from '../../../cli/Command.js'
+import { error } from '../../../cli/output.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/sys/powercfg.ts
 
 async function executePowercfg(_args: string[]): Promise<void> {
 

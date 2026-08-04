@@ -1,6 +1,7 @@
-// src/groups/w/sys/bat.ts
-import si from 'systeminformation'
 import { Command } from '../../../cli/Command.js'
+import si from 'systeminformation'
+
+// src/groups/w/sys/bat.ts
 
 async function executeBat(_args: string[]): Promise<void> {
 

@@ -1,8 +1,9 @@
-// src/groups/w/file/mv.ts
-import fs from 'fs'
-import { cliText } from '../../../cli/output.js'
-import path from 'path'
 import { Command } from '../../../cli/Command.js'
+import { cliText } from '../../../cli/output.js'
+import fs from 'fs'
+import path from 'path'
+
+// src/groups/w/file/mv.ts
 
 async function executeMv(args: string[]): Promise<void> {
 

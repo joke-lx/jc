@@ -1,6 +1,7 @@
-// src/groups/w/tools/services.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/services.ts
 
 async function executeServices(_args: string[]): Promise<void> {
 

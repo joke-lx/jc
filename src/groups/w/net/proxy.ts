@@ -1,6 +1,7 @@
-// src/groups/w/net/proxy.ts
-import { getNetworkManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getNetworkManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/net/proxy.ts
 
 async function executeProxy(_args: string[]): Promise<void> {
 

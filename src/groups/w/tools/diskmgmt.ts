@@ -1,6 +1,7 @@
-// src/groups/w/tools/diskmgmt.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/diskmgmt.ts
 
 async function executeDiskmgmt(_args: string[]): Promise<void> {
 

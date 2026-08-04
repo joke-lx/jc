@@ -1,6 +1,7 @@
-// src/groups/w/tools/devmgmt.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/devmgmt.ts
 
 async function executeDevmgmt(_args: string[]): Promise<void> {
 

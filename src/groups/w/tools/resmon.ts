@@ -1,6 +1,7 @@
-// src/groups/w/tools/resmon.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/resmon.ts
 
 async function executeResmon(_args: string[]): Promise<void> {
 

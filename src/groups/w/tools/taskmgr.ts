@@ -1,6 +1,7 @@
-// src/groups/w/tools/taskmgr.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/taskmgr.ts
 
 async function executeTaskmgr(_args: string[]): Promise<void> {
 

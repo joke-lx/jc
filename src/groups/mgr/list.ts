@@ -1,6 +1,7 @@
-// src/groups/mgr/list.ts
-import { listItems } from '../../shared/registry/store.js'
 import { Command } from '../../cli/Command.js'
+import { listItems } from '../../shared/registry/store.js'
+
+// src/groups/mgr/list.ts
 
 async function executeList(_args: string[]): Promise<void> {
 

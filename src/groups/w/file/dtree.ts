@@ -1,6 +1,8 @@
-// src/groups/w/file/dtree.ts
+import { Command } from '../../../cli/Command.js'
 import fs from 'fs'
 import path from 'path'
+
+// src/groups/w/file/dtree.ts
 
 function printTree(dir: string, prefix: string = ''): void {
   let items: string[] = []
@@ -21,7 +23,6 @@ function printTree(dir: string, prefix: string = ''): void {
     } catch { /* skip */ }
   }
 }
-import { Command } from '../../../cli/Command.js'
 
 async function executeDtree(args: string[]): Promise<void> {
 

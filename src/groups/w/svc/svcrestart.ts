@@ -1,6 +1,7 @@
-// src/groups/w/svc/svcrestart.ts
-import { execSync } from 'child_process'
 import { Command } from '../../../cli/Command.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/svc/svcrestart.ts
 
 async function executeSvcrestart(args: string[]): Promise<void> {
 

@@ -1,3 +1,16 @@
+import { Command } from '../../cli/Command.js'
+import { cliText } from '../../cli/output.js'
+import { error, success, warning } from '../../cli/output.js'
+import { isManifest, type BackupManifest, type ManifestItem } from '../../shared/backup/manifest.js'
+import { openZip, hasEntry, readTextEntry } from '../../shared/backup/zip.js'
+import { getRegistryPath, ensureRegistryDir } from '../../shared/registry/paths.js'
+import { isInteractive, prompt, promptChoice, NoTTYError } from '../../shared/registry/prompt.js'
+import { existsSync, mkdirSync, writeFileSync, copyFileSync } from 'fs'
+import { join, basename, dirname } from 'path'
+import {
+  readRegistry, writeRegistry, addItem, removeItem,
+} from '../../shared/registry/store.js'
+
 // src/groups/mgr/restore.ts
 // 从 zip 还原 registry。三个策略：默认 skip（已有 alias 不动）、--merge（覆盖）、
 // --replace（先自动备份当前再清空重建）。--dry-run 只报告不写。
@@ -11,17 +24,6 @@
 // 4. execLocal=true 但 bundledAs 不存在的项：failed++，告诉用户跑 jc mgr check <alias> 重装。
 //    不能盲目写空 exec，否则后续 run 直接炸。
 // 5. formatVersion 严格校验：未知版本直接拒绝，避免静默错位。
-import { existsSync, mkdirSync, writeFileSync, copyFileSync } from 'fs'
-import { cliText } from '../../cli/output.js'
-import { join, basename, dirname } from 'path'
-import { error, success, warning } from '../../cli/output.js'
-import { getRegistryPath, ensureRegistryDir } from '../../shared/registry/paths.js'
-import {
-  readRegistry, writeRegistry, addItem, removeItem,
-} from '../../shared/registry/store.js'
-import { isManifest, type BackupManifest, type ManifestItem } from '../../shared/backup/manifest.js'
-import { openZip, hasEntry, readTextEntry } from '../../shared/backup/zip.js'
-import { isInteractive, prompt, promptChoice, NoTTYError } from '../../shared/registry/prompt.js'
 
 type Mode = 'skip' | 'merge' | 'replace' | 'dry-run'
 
@@ -112,7 +114,6 @@ function planRestore(
   }
   return { imported, skipped, failed, wouldClear: mode === 'replace' }
 }
-import { Command } from '../../cli/Command.js'
 
 async function executeRestore(args: string[]): Promise<void> {
 

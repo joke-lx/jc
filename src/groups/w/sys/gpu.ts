@@ -1,6 +1,7 @@
-// src/groups/w/sys/gpu.ts
-import { getGpuManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getGpuManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/sys/gpu.ts
 
 async function executeGpu(_args: string[]): Promise<void> {
 

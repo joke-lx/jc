@@ -1,8 +1,9 @@
-// src/groups/w/file/rm.ts
-import fs from 'fs'
+import { Command } from '../../../cli/Command.js'
 import { cliText } from '../../../cli/output.js'
 import { confirm } from '../../../shared/registry/confirm.js'
-import { Command } from '../../../cli/Command.js'
+import fs from 'fs'
+
+// src/groups/w/file/rm.ts
 
 async function executeRm(args: string[]): Promise<void> {
 

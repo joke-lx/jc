@@ -1,6 +1,7 @@
-// src/groups/w/tools/eventvwr.ts
-import open from 'open'
 import { Command } from '../../../cli/Command.js'
+import open from 'open'
+
+// src/groups/w/tools/eventvwr.ts
 
 async function executeEventvwr(_args: string[]): Promise<void> {
 

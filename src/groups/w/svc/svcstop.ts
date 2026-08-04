@@ -1,6 +1,7 @@
-// src/groups/w/svc/svcstop.ts
-import { execSync } from 'child_process'
 import { Command } from '../../../cli/Command.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/svc/svcstop.ts
 
 async function executeSvcstop(args: string[]): Promise<void> {
 

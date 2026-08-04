@@ -1,13 +1,15 @@
+import { Command } from '../../cli/Command.js'
+import { error } from '../../cli/output.js'
+import { isInteractive, prompt, promptChoice, NoTTYError } from '../../shared/registry/prompt.js'
+import { addItem, getItem, readRegistry, writeRegistry } from '../../shared/registry/store.js'
+import { ALIAS_RE, type RegistryFile } from '../../shared/registry/types.js'
+import { readFileSync } from 'fs'
+
 // src/groups/mgr/import.ts
 // 交互式：缺来源时问 "stdin / 文件？"；跳过后问"切换 --merge 重新跑？"
 //
 // 关键不变量：CLI 参数完整时的行为与旧实现字节级一致；
 // 交互只在"原本 exit 1 的位置"出现，不引入副作用。
-import { readFileSync } from 'fs'
-import { error } from '../../cli/output.js'
-import { addItem, getItem, readRegistry, writeRegistry } from '../../shared/registry/store.js'
-import { ALIAS_RE, type RegistryFile } from '../../shared/registry/types.js'
-import { isInteractive, prompt, promptChoice, NoTTYError } from '../../shared/registry/prompt.js'
 
 function shapeOf(obj: unknown): obj is RegistryFile {
   if (!obj || typeof obj !== 'object') return false
@@ -81,7 +83,6 @@ async function resolveSource(isTTY: boolean): Promise<string> {
     }
   }
 }
-import { Command } from '../../cli/Command.js'
 
 async function executeImport(args: string[]): Promise<void> {
 

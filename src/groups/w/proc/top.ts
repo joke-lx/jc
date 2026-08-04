@@ -1,6 +1,7 @@
-// src/groups/w/proc/top.ts
-import { getProcessManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getProcessManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/proc/top.ts
 
 async function executeTop(args: string[]): Promise<void> {
 

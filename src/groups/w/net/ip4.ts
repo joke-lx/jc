@@ -1,6 +1,7 @@
-// src/groups/w/net/ip4.ts
-import { getNetworkManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getNetworkManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/net/ip4.ts
 
 async function executeIp4(_args: string[]): Promise<void> {
 

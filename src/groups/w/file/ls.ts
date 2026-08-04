@@ -1,7 +1,8 @@
-// src/groups/w/file/ls.ts
+import { Command } from '../../../cli/Command.js'
 import fs from 'fs'
 import path from 'path'
-import { Command } from '../../../cli/Command.js'
+
+// src/groups/w/file/ls.ts
 
 async function executeLs(args: string[]): Promise<void> {
 

@@ -1,7 +1,8 @@
-// src/groups/w/file/del.ts
-import fs from 'fs'
-import { cliText } from '../../../cli/output.js'
 import { Command } from '../../../cli/Command.js'
+import { cliText } from '../../../cli/output.js'
+import fs from 'fs'
+
+// src/groups/w/file/del.ts
 
 async function executeDel(args: string[]): Promise<void> {
 

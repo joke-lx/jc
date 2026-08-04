@@ -1,6 +1,7 @@
-// src/groups/w/sys/uptime.ts
-import { getOsManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getOsManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/sys/uptime.ts
 
 async function executeUptime(_args: string[]): Promise<void> {
 

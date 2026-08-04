@@ -1,3 +1,13 @@
+import { Command } from '../../cli/Command.js'
+import { error, warning, cliText } from '../../cli/output.js'
+import { confirm } from '../../shared/registry/confirm.js'
+import { getRegistryPath } from '../../shared/registry/paths.js'
+import { isInteractive, prompt, promptChoice, NoTTYError } from '../../shared/registry/prompt.js'
+import { readRegistry } from '../../shared/registry/store.js'
+import { safeIsoStamp } from './config.js'
+import { writeFileSync, existsSync, mkdirSync } from 'fs'
+import { dirname, join } from 'path'
+
 // src/groups/mgr/export.ts
 // 交互式：缺路径时问"stdout / 写文件？"；写文件问路径 + 覆盖确认。
 //
@@ -6,15 +16,6 @@
 //   jc mgr export <path>                → 同上
 //   jc mgr export                       + TTY    → 提议智能默认 ${REGISTRY_DIR}/exports/registry-{ISO}.json
 //                                  非 TTY       → 保持旧行为：stdout（管道重定向）
-import { writeFileSync, existsSync, mkdirSync } from 'fs'
-import { dirname, join } from 'path'
-import { error, warning, cliText } from '../../cli/output.js'
-import { Command } from '../../cli/Command.js'
-import { confirm } from '../../shared/registry/confirm.js'
-import { readRegistry } from '../../shared/registry/store.js'
-import { getRegistryPath } from '../../shared/registry/paths.js'
-import { isInteractive, prompt, promptChoice, NoTTYError } from '../../shared/registry/prompt.js'
-import { safeIsoStamp } from './config.js'
 
 type Dest = 'stdout' | 'file'
 

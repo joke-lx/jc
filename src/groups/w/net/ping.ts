@@ -1,6 +1,7 @@
-// src/groups/w/net/ping.ts
-import { getNetworkManager } from '../../../shared/system/adapter.js'
 import { Command } from '../../../cli/Command.js'
+import { getNetworkManager } from '../../../shared/system/adapter.js'
+
+// src/groups/w/net/ping.ts
 
 async function executePing(args: string[]): Promise<void> {
 

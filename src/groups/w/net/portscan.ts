@@ -1,5 +1,7 @@
-// src/groups/w/net/portscan.ts
+import { Command } from '../../../cli/Command.js'
 import net from 'net'
+
+// src/groups/w/net/portscan.ts
 
 async function checkPort(host: string, port: number, timeout = 3000): Promise<boolean> {
   return new Promise(resolve => {
@@ -11,7 +13,6 @@ async function checkPort(host: string, port: number, timeout = 3000): Promise<bo
     socket.connect(port, host)
   })
 }
-import { Command } from '../../../cli/Command.js'
 
 async function executePortscan(args: string[]): Promise<void> {
 

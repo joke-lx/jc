@@ -1,5 +1,6 @@
-// src/groups/w/proc/mem.ts
 import { Command } from '../../../cli/Command.js'
+
+// src/groups/w/proc/mem.ts
 
 async function executeMem(args: string[]): Promise<void> {
 

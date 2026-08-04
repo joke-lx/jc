@@ -1,6 +1,7 @@
-// src/groups/w/wsl/wslkill.ts
-import { execSync } from 'child_process'
 import { Command } from '../../../cli/Command.js'
+import { execSync } from 'child_process'
+
+// src/groups/w/wsl/wslkill.ts
 
 async function executeWslkill(_args: string[]): Promise<void> {
 
