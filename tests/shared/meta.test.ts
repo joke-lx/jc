@@ -36,9 +36,11 @@ describe('meta consumers', () => {
     expect(src).toContain('META.dataDirName')
   })
 
-  it('output.ts references META (not hardcoded jc)', async () => {
+  it('output.ts references CLI_TOKEN (not hardcoded jc)', async () => {
     const path = fileURLToPath(new URL('../../src/cli/output.ts', import.meta.url))
     const src = readFileSync(path, 'utf-8')
-    expect(src).toContain('META')
+    expect(src).toContain('CLI_TOKEN')
+    // output.ts 不应再有硬编码的 'jc' 字面（正则已被 replaceAll(CLI_TOKEN) 替代）
+    expect(src).not.toContain("META.binaryName")
   })
 })

@@ -33,3 +33,11 @@ export const META = {
   // 当前 src 内没有地方引用（package.json 里），但放在这里便于以后迁移。
   packageName: 'je-cd',
 } as const
+
+// 渲染层占位符：metadata 里代表"当前 CLI 名"的槽位。
+// 在 examples / helpText / related 里写 `{cli}`，渲染时由 cliText() 替换成
+// 当前配置名（默认 'jc'，用户配 JC_CLI_NAME=bb 时变 'bb'）。
+// 为什么用独立占位符而非 canonical 名：metadata 可能进入 TOML（纯数据，无插值），
+// `{cli}` 让 TS 类（${this.bin} 求值成 {cli}）和 TOML 记录共用同一渲染出口。
+// 漏过 cliText() 的字段会显示字面 `{cli}`——响亮失败，一眼是 bug。
+export const CLI_TOKEN = '{cli}'

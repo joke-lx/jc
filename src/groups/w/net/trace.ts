@@ -8,7 +8,7 @@ async function executeTrace(args: string[]): Promise<void> {
 
   const host = args[0]
   if (!host) {
-    console.log(cliText('用法: jc w trace <host>'))
+    console.log(cliText('用法: {cli} w trace <host>'))
     return
   }
   console.log(`路由追踪到 ${host}...`)

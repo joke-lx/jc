@@ -8,7 +8,7 @@ async function executeDel(args: string[]): Promise<void> {
 
   const file = args[0]
   if (!file) {
-    console.log(cliText('用法: jc w del <file>'))
+    console.log(cliText('用法: {cli} w del <file>'))
     return
   }
   try {

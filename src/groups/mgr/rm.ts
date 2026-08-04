@@ -12,7 +12,7 @@ async function executeRm(args: string[]): Promise<void> {
   let [alias] = args
   if (!alias) {
     if (!isInteractive()) {
-      console.error(error(cliText('用法: jc mgr rm <alias>')))
+      console.error(error(cliText('用法: {cli} mgr rm <alias>')))
       console.error(error('提示: 缺 alias 且当前为非交互模式。请提供 alias 或加 --yes 后跟值。'))
       process.exit(1)
     }

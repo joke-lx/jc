@@ -10,7 +10,7 @@ async function executeCp(args: string[]): Promise<void> {
   const src = args[0]
   const dest = args[1]
   if (!src || !dest) {
-    console.log(cliText('用法: jc w cp <source> <destination>'))
+    console.log(cliText('用法: {cli} w cp <source> <destination>'))
     return
   }
   try {

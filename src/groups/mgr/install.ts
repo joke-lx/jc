@@ -55,7 +55,7 @@ async function executeInstall(args: string[]): Promise<void> {
 
   const p = parseArgs(args)
   if (!p.cmd || !p.bin || !p.alias) {
-    console.error(error(cliText('用法: jc mgr install --cmd "<install-cmd>" --bin <name> --alias <name> [--kind <npm|py|exe>] [--desc <text>]')))
+    console.error(error(cliText('用法: {cli} mgr install --cmd "<install-cmd>" --bin <name> --alias <name> [--kind <npm|py|exe>] [--desc <text>]')))
     process.exit(1)
   }
 

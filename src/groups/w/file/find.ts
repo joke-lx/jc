@@ -28,7 +28,7 @@ async function executeFind(args: string[]): Promise<void> {
   const pattern = args[0]
   const rootDir = args[1] || '.'
   if (!pattern) {
-    console.log(cliText('用法: jc w find <pattern> [rootDir]'))
+    console.log(cliText('用法: {cli} w find <pattern> [rootDir]'))
     return
   }
   console.log(`在 ${rootDir} 中搜索 "${pattern}"...`)

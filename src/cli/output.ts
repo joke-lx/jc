@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import type { Command, Category, Group } from './types.js'
 import { getCliNameInfo } from '../shared/config/store.js'
-import { META } from '../shared/meta.js'
+import { CLI_TOKEN } from '../shared/meta.js'
 
 export const groupName = chalk.yellow
 export const subCmd = chalk.blue
@@ -19,19 +19,14 @@ export function getStyledCliName(): string {
   return chalk.red(getCliNameInfo().name)
 }
 
-// 把模板字符串里所有 standalone canonical CLI token 替换成当前 CLI 名。
-// 不替换路径中的 /jc/、JC_REGISTRY_PATH、jcVersion、jcDir、单词内的 jc。
-// 匹配规则：必须在行首 / 空白 / | / ; 之后；后面必须是空白 / | / ; / 行尾。
-// 模板里的 'jc' 是 canonical 名字（来自 META.binaryName），运行时按用户配置替换。
+// 把模板里的 {cli} 占位符替换成当前 CLI 名。
+// 占位符来自 CLI_TOKEN（src/shared/meta.ts）；class 字段 `${this.bin}` 求值成 `{cli}`，
+// handler 用法串里也写 `{cli}` 字面。两者进入 renderer 前形态相同。
+// 漏过本函数的字段会显示字面 `{cli}`——响亮失败，一眼是 bug。
+// 用 replaceAll 字面替换，无需正则 token 边界判断（{cli} 不会出现在 /jc/ 路径、
+// JC_REGISTRY_PATH、jcVersion 等位置）。
 export function cliText(template: string): string {
-  const name = getCliNameInfo().name
-  const canonical = META.binaryName
-  // 快路径：模板不含 canonical token 时直接返回，避免无谓的正则扫描。
-  if (template.indexOf(canonical) === -1) return template
-  // 动态构造 regex：'(^|[\\s|;])jc(?=[\\s|;]|$)'
-  // 保留 prefix 字符，避免破坏缩进和管道。
-  const re = new RegExp(`(^|[\\s|;])${canonical}(?=[\\s|;]|$)`, 'g')
-  return template.replace(re, (m, prefix) => prefix + name)
+  return template.replaceAll(CLI_TOKEN, getCliNameInfo().name)
 }
 
 export function printHeader(title: string): void {

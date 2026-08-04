@@ -14,7 +14,7 @@ async function executeRegset(args: string[]): Promise<void> {
   const path = args[0]
   const name = args[1]
   const value = args.slice(2).join(' ')
-  if (!path || !name) { console.error(cliText('❌ 用法: jc w regset <path> <name> <value>')); process.exit(1) }
+  if (!path || !name) { console.error(cliText('❌ 用法: {cli} w regset <path> <name> <value>')); process.exit(1) }
   execSync(`reg add "${path}" /v "${name}" /d "${value}" /f`, { stdio: 'inherit' })
 
 }

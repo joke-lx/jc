@@ -10,7 +10,7 @@ async function executeLn(args: string[]): Promise<void> {
   const target = args[0]
   const linkPath = args[1]
   if (!target || !linkPath) {
-    console.log(cliText('用法: jc w ln <target> <link>'))
+    console.log(cliText('用法: {cli} w ln <target> <link>'))
     return
   }
   try {

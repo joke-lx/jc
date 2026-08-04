@@ -9,7 +9,7 @@ async function executeTouch(args: string[]): Promise<void> {
 
   const file = args[0]
   if (!file) {
-    console.log(cliText('用法: jc w touch <file>'))
+    console.log(cliText('用法: {cli} w touch <file>'))
     return
   }
   try {

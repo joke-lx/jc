@@ -161,7 +161,7 @@ async function executeCname(args: string[]): Promise<void> {
 
   const r = parseArgs(args)
   if (!r.ok) {
-    console.error(error(cliText(`用法: jc mgr cname [<name>] | set <name> | reset`)))
+    console.error(error(cliText(`用法: {cli} mgr cname [<name>] | set <name> | reset`)))
     console.error(error(r.reason))
     process.exit(1)
   }

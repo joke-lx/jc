@@ -63,7 +63,7 @@ async function actionInit(targetDir: string | undefined): Promise<void> {
   let dir = targetDir
   if (!dir) {
     if (!isInteractive()) {
-      console.error(error(cliText('用法: jc mgr config init --dir <path>')))
+      console.error(error(cliText('用法: {cli} mgr config init --dir <path>')))
       console.error(error('提示: 缺少 --dir 且当前为非交互模式。'))
       process.exit(1)
     }
@@ -93,7 +93,7 @@ async function actionInit(targetDir: string | undefined): Promise<void> {
   }
   const target = join(parent, 'registry.json')
   if (existsSync(target)) {
-    console.error(error(cliText(`已存在: ${target}（拒绝覆盖，用 jc mgr import 导入数据）`)))
+    console.error(error(cliText(`已存在: ${target}（拒绝覆盖，用 {cli} mgr import 导入数据）`)))
     process.exit(2)
   }
   writeFileSync(target, JSON.stringify({ version: 1, items: [] }, null, 2) + '\n', 'utf-8')
@@ -104,7 +104,7 @@ async function actionInit(targetDir: string | undefined): Promise<void> {
   if (!process.env.JC_REGISTRY_PATH && target !== getRegistryPath()) {
     console.log()
     console.log(warning('提示: 此位置与默认 registry 路径不同。'))
-    console.log(cliText(`  临时使用: $env:JC_REGISTRY_PATH = "${target}"; jc ...`))
+    console.log(cliText(`  临时使用: $env:JC_REGISTRY_PATH = "${target}"; {cli} ...`))
     console.log(`  永久生效: setx JC_REGISTRY_PATH "${target}"`)
     console.log('  （永久生效后，新 shell 才看得到；当前 shell 请用临时方式）')
   }

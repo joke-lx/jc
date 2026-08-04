@@ -8,7 +8,7 @@ async function executeMkdir(args: string[]): Promise<void> {
 
   const dir = args[0]
   if (!dir) {
-    console.log(cliText('用法: jc w mkdir <directory>'))
+    console.log(cliText('用法: {cli} w mkdir <directory>'))
     return
   }
   try {

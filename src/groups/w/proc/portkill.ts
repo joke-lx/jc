@@ -8,7 +8,7 @@ import { getProcessManager } from '../../../shared/system/adapter.js'
 async function executePortkill(args: string[]): Promise<void> {
 
   if (args.length === 0 || args[0] === '--help' || args[0] === '?') {
-    console.log(cliText(`用法: jc w pk <PORT> [--soft|--list]`))
+    console.log(cliText(`用法: {cli} w pk <PORT> [--soft|--list]`))
     return
   }
   const port = parseInt(args[0], 10)

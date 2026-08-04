@@ -17,7 +17,7 @@ async function executeRun(args: string[]): Promise<void> {
   // argv 为空 或 alias 不在 registry → 交互选 alias。
   if (!alias || !getItem(alias.toLowerCase())) {
     if (!isInteractive()) {
-      console.error(error(cliText('用法: jc mgr run <alias> [args...]')))
+      console.error(error(cliText('用法: {cli} mgr run <alias> [args...]')))
       if (alias && !getItem(alias.toLowerCase())) {
         console.error(error(`未找到 alias: ${alias}`))
       } else {

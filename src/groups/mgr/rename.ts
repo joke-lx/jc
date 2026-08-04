@@ -14,7 +14,7 @@ async function executeRename(args: string[]): Promise<void> {
   const needsInteractive = !oldAlias || !newAlias
   if (needsInteractive) {
     if (!isInteractive()) {
-      console.error(error(cliText('用法: jc mgr rename <old-alias> <new-alias>')))
+      console.error(error(cliText('用法: {cli} mgr rename <old-alias> <new-alias>')))
       console.error(error('提示: 参数不全且当前为非交互模式。请补全参数。'))
       process.exit(1)
     }

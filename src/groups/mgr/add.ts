@@ -137,7 +137,7 @@ async function executeAdd(args: string[]): Promise<void> {
 
   if (incomplete) {
     if (!isInteractive()) {
-      console.error(error(cliText('用法: jc mgr add <npm|py|exe> <source> --alias <alias> [--desc <desc>]')))
+      console.error(error(cliText('用法: {cli} mgr add <npm|py|exe> <source> --alias <alias> [--desc <desc>]')))
       console.error(error('      jc mgr add <npm|py|exe> --install "<cmd>" --bin <name> --alias <alias>'))
       console.error(error('提示: 缺少参数且当前为非交互模式。'))
       process.exit(1)
@@ -155,7 +155,7 @@ async function executeAdd(args: string[]): Promise<void> {
 
   const { kind, source, alias, desc, install, bin } = parsed
   if (!kind || !alias) {
-    console.error(error(cliText('用法: jc mgr add <npm|py|exe> <source> --alias <alias>')))
+    console.error(error(cliText('用法: {cli} mgr add <npm|py|exe> <source> --alias <alias>')))
     process.exit(1)
   }
   if (!ALIAS_RE.test(alias)) { console.error(error(`alias 非法: ${alias}`)); process.exit(1) }
@@ -173,7 +173,7 @@ async function executeAdd(args: string[]): Promise<void> {
     finalSource = install
   } else {
     if (!source) {
-      console.error(error(cliText('用法: jc mgr add <npm|py|exe> <source> --alias <alias>')))
+      console.error(error(cliText('用法: {cli} mgr add <npm|py|exe> <source> --alias <alias>')))
       process.exit(1)
     }
     const v = await validateSource({ kind, source, alias: normalizedAlias, desc })

@@ -63,7 +63,7 @@ async function executeBackup(args: string[]): Promise<void> {
 
   const parsed = parseArgs(args)
   if (!parsed) {
-    console.error(error(cliText('用法: jc mgr backup <path.zip> [--include-local] [--yes]')))
+    console.error(error(cliText('用法: {cli} mgr backup <path.zip> [--include-local] [--yes]')))
     process.exit(1)
   }
 

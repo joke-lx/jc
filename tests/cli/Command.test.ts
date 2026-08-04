@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { META } from '../../src/shared/meta.js'
+import { CLI_TOKEN } from '../../src/shared/meta.js'
 
 describe('Command base class', () => {
-  it('bin getter returns META.binaryName', async () => {
+  it('bin getter returns the {cli} placeholder', async () => {
     const { Command } = await import('../../src/cli/Command.js')
     class Stub extends Command {
       name = 'stub'
@@ -10,8 +10,9 @@ describe('Command base class', () => {
       async handler() { /* noop */ }
     }
     const s = new Stub()
-    expect(s.bin).toBe(META.binaryName)
-    expect(s.bin).toBe('jc')
+    // bin getter 返回渲染占位符 {cli}，渲染时由 cliText() 替换成当前 CLI 名。
+    expect(s.bin).toBe(CLI_TOKEN)
+    expect(s.bin).toBe('{cli}')
   })
 
   it('subclass instance satisfies structural Command interface', async () => {
@@ -43,8 +44,8 @@ describe('Command base class', () => {
       async handler() { /* noop */ }
     }
     const s = new Stub()
-    // canonical binary name 拼在字段里，运行时由 cliText 替换为用户配置
-    expect(s.examples).toEqual(['jc w k 1234'])
-    expect(s.helpText).toBe('用法:\n  jc w k <PID>')
+    // ${this.bin} 求值成占位符 {cli}，运行时由 cliText 替换为用户配置
+    expect(s.examples).toEqual(['{cli} w k 1234'])
+    expect(s.helpText).toBe('用法:\n  {cli} w k <PID>')
   })
 })

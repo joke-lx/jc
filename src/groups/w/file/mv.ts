@@ -10,7 +10,7 @@ async function executeMv(args: string[]): Promise<void> {
   const src = args[0]
   const dest = args[1]
   if (!src || !dest) {
-    console.log(cliText('用法: jc w mv <source> <destination>'))
+    console.log(cliText('用法: {cli} w mv <source> <destination>'))
     return
   }
   try {

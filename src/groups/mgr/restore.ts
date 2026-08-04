@@ -127,7 +127,7 @@ async function executeRestore(args: string[]): Promise<void> {
   }
 
   if (!parsed.zipPath) {
-    console.error(error(cliText('用法: jc mgr restore <path.zip> [--dry-run | --merge | --replace]')))
+    console.error(error(cliText('用法: {cli} mgr restore <path.zip> [--dry-run | --merge | --replace]')))
     process.exit(1)
   }
 

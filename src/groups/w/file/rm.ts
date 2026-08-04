@@ -9,7 +9,7 @@ async function executeRm(args: string[]): Promise<void> {
 
   const dir = args[0]
   if (!dir) {
-    console.log(cliText('用法: jc w rm <directory>'))
+    console.log(cliText('用法: {cli} w rm <directory>'))
     return
   }
   try {

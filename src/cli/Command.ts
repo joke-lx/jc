@@ -14,16 +14,17 @@
 // - 本 class `implements CommandShape` 仅作为 TypeScript 编译期检查。
 // - 外部 import 用法：`import { Command } from './cli/Command.js'`（class），
 //   或 `import type { Command as CommandShape } from './cli/types.js'`（interface）。
-import { META } from '../shared/meta.js'
+import { CLI_TOKEN } from '../shared/meta.js'
 import type { Command as CommandShape } from './types.js'
 
 export abstract class Command implements CommandShape {
-  // 当前 binary 的 canonical name。子类在 metadata 模板字符串里用 `${this.bin}` 拼出。
-  // 实现是 getter（每次读 META），不开销在 hot path 上。
-  // 不缓存到 constructor 字段：避免 META 未来变可写时实例"陈旧"；也避免子类继承字段时
-  // 容易误改。
+  // 当前 binary 的渲染占位符。子类在 metadata 模板字符串里用 `${this.bin}` 引用，
+  // 求值成 `{cli}`（CLI_TOKEN），渲染时由 output.ts 的 cliText() 替换成当前配置名。
+  // 返回占位符而非 META.binaryName：metadata 未来会进 TOML（纯数据，无插值），
+  // `{cli}` 让 TS 类和 TOML 记录共用同一渲染出口，快照对比才有意义。
+  // 实现是 getter（每次读 CLI_TOKEN），不开销在 hot path 上。
   get bin(): string {
-    return META.binaryName
+    return CLI_TOKEN
   }
 
   // 必填契约。abstract 强制子类必须实现。
