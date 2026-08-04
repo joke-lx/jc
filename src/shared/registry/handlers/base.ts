@@ -1,6 +1,5 @@
 // src/shared/registry/handlers/base.ts
 // 抽象基类 ItemHandler：把 jc mgr 的"按 kind 走不同路径"从 if-else 收敛到一处。
-// 设计动机见 docs/superpowers/specs/2026-07-31-jc-mgr-handlers-design.md section 5。
 // 未来加新 kind（git / docker / brew 等）只需新建一个 XxxItemHandler + 在 index.ts 表里加一行，
 // validate / preflight / run 的调用点全部不动。
 import { spawn } from 'child_process'

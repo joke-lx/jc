@@ -2,7 +2,6 @@
 // jc mgr 持久化层与 handler 抽象共用的核心类型。
 // 这是"状态形状"的真相来源：磁盘上的 registry.json 长什么样、handler 怎么处理、router 怎么读，
 // 全部以这个文件为准。改它 = 破坏 schema，向后兼容需递增 version。
-// 设计动机见 docs/superpowers/specs/2026-07-30-jc-mgr-design.md section 5.1。
 export type RegistryItemKind = 'npm' | 'py' | 'exe'
 
 // alias 的硬约束：1-32 个字符，开头必须小写字母或数字。

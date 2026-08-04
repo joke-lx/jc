@@ -1,6 +1,5 @@
 // src/shared/registry/confirm.ts
 // 破坏性操作确认提示的独立 helper。
-// 设计动机见 docs/superpowers/specs/2026-07-30-jc-mgr-design.md section 5.1 + 后续 Task 3 重构。
 // 提升位置：本函数原在 src/groups/w/file/rm.ts:5-13 私有定义；mgr 组（rm / rename）需要复用时
 // 提到此处，避免在两个 handler 中各复制一份（也避免每加一条破坏性命令就 copy 一份）。
 //

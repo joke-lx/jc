@@ -1,6 +1,7 @@
 // src/shared/registry/paths.ts
 // registry 文件的物理位置解析。XDG 优先，Windows / Unix 各自有 fallback。
-// 设计动机见 docs/superpowers/specs/2026-07-30-jc-mgr-design.md section 5.1。
+// 设计动机：registry 单一 JSON 文件，路径解析遵循"环境变量覆盖默认"原则，
+// 与 CLI 配置（config.json）分离，见 src/shared/config/paths.ts。
 import { mkdirSync } from 'fs'
 import { join } from 'path'
 import { META } from '../meta.js'

@@ -143,8 +143,6 @@ expect(top.length).toBeLessThanOrEqual(5)
 
 ## 跳转链接
 
-- 本 skill 的设计规范：`docs/superpowers/specs/2026-07-29-jc-development-skill-design.md`。
 - Adapter 契约（mock 策略所针对的系统）：`references/system-adapters.md`。
-- Router 与 `commandDef` 规则（多数测试会触达的面）：`references/routing-and-command-authoring.md`。
-- 项目原始规范：`docs/superpowers/specs/2026-06-20-jc-npm-cli-design.md`。
-- 项目原始实施计划：`docs/superpowers/plans/2026-06-20-jc-implementation.md`。
+- Router 与 command authoring 规则（多数测试会触达的面）：`references/routing-and-command-authoring.md`。
+- 历史设计文档已归档到 git 历史（`docs/superpowers/specs/2026-06-20-jc-npm-cli-design.md` 等），需要时 `git log --all` 可查。

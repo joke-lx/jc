@@ -1,6 +1,5 @@
 // src/shared/registry/store.ts
 // jc mgr 的磁盘持久化层。读/写/修改 registry.json 的所有入口都在这里。
-// 设计动机见 docs/superpowers/specs/2026-07-30-jc-mgr-design.md section 5.1。
 // ⚠️ 当前是单文件 JSON 形态（`{ version: 1, items: [...] }`）。下一轮可能改为目录式
 // （`$XDG_DATA_HOME/jc/registry/<alias>/item.json + bin/`），届时这个文件整体重写。
 import { readFileSync, writeFileSync, renameSync, existsSync } from 'fs'

@@ -212,12 +212,12 @@ const cmd = process.platform === 'win32'
 
 退出码契约是固定的，不要新增。
 
-| Code | 含义 | 真理来源 |
+| Code | 含义 | 执行点 |
 |---|---|---|
-| `0` | 成功 | `docs/superpowers/specs/2026-06-20-jc-npm-cli-design.md:69-75` |
-| `1` | 未知命令 / 用法错误 | `docs/superpowers/specs/2026-06-20-jc-npm-cli-design.md:69-75` |
-| `2` | 执行失败（如 kill 进程失败） | `docs/superpowers/specs/2026-06-20-jc-npm-cli-design.md:69-75` |
-| `3` | 平台不支持 | `docs/superpowers/specs/2026-06-20-jc-npm-cli-design.md:69-75` |
+| `0` | 成功 | 正常 return |
+| `1` | 未知命令 / 用法错误 | `src/cli/router.ts` 未知命令 / 各 handler 缺参 |
+| `2` | 执行失败（如 kill 进程失败） | 各 handler `process.exit(2)` |
+| `3` | 平台不支持 | `src/cli/router.ts` platform 门禁 |
 
 执行点：
 
@@ -282,6 +282,6 @@ if (answer === 'y') {
 
 ## 跳转链接
 
-- 本 skill 的设计规范：`docs/superpowers/specs/2026-07-29-jc-development-skill-design.md`
-- 项目原始规范（退出码契约）：`docs/superpowers/specs/2026-06-20-jc-npm-cli-design.md`
-- 项目原始实施计划：`docs/superpowers/plans/2026-06-20-jc-implementation.md`
+- 相关 reference：`project-map.md`、`routing-and-command-authoring.md`
+- 退出码执行点：`src/cli/router.ts`（platform 门禁 exit 3）与各 handler
+- 历史设计文档已归档到 git 历史（`docs/superpowers/specs/2026-06-20-jc-npm-cli-design.md` 等），需要时 `git log --all` 可查。

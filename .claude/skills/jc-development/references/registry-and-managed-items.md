@@ -103,9 +103,8 @@ env 覆盖：`JC_CLI_NAME=bb jc ...` 临时覆盖（优先级最高）。`cname 
 
 ## 跳转链接
 
-- 本 skill 的设计规范：`docs/superpowers/specs/2026-07-30-jc-mgr-design.md`
-- cname 别名设计（launcher shim + cliText 渲染）：`C:\Users\joke\.claude\plans\compiled-snacking-waffle.md`
 - 实现：`src/shared/registry/**`、`src/shared/config/**`、`src/groups/mgr/**`
 - `confirm()` helper：`src/shared/registry/confirm.ts`
 - launcher 管理：`src/shared/config/launcher.ts`
-- 项目原始规范：`docs/superpowers/specs/2026-06-20-jc-npm-cli-design.md`
+- cname 别名机制（launcher shim + cliText 渲染）：见 `src/groups/mgr/cname.ts` 头部注释
+- 历史设计文档已归档到 git 历史（`docs/superpowers/specs/2026-07-30-jc-mgr-design.md` 等），需要时 `git log --all` 可查。

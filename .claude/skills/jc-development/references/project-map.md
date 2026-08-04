@@ -86,7 +86,5 @@ import { Command } from '../../../cli/Command.js'
 
 ## 跳转链接
 
-- 本 skill 的设计规范：`docs/superpowers/specs/2026-07-29-jc-development-skill-design.md`
-- cname 别名设计：`C:\Users\joke\.claude\plans\compiled-snacking-waffle.md`（commandDef class 迁移）
-- 项目原始规范：`docs/superpowers/specs/2026-06-20-jc-npm-cli-design.md`
-- 项目原始实施计划：`docs/superpowers/plans/2026-06-20-jc-implementation.md`
+- 相关 reference：`routing-and-command-authoring.md`（命令 authoring 规范）、`registry-and-managed-items.md`（mgr / cname）
+- 历史设计文档已归档到 git 历史（`docs/superpowers/specs/2026-06-20-jc-npm-cli-design.md` 等），需要时 `git log --all` 可查。
