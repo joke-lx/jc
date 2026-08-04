@@ -40,7 +40,7 @@ jc w ?                # 命令帮助
 
 # 统一管理器（mgr）— 注册 npm / py / exe 项并通过别名调用
 jc mgr add exe "C:\path\to\tool.exe" --alias tool # 注册一个 exe
-jc mgr install --cmd "uv tool install sql-harness" --bin sql-harness --alias sh  # 一行：安装+注册
+jc mgr install --cmd "uv tool install <pkg>" --bin <exec> --alias <alias>  # 一行：安装+注册
 jc mgr list                                       # 列出已注册的项
 jc mgr check tool                                 # 重新验证源是否可达
 jc mgr rm tool                                    # 按别名删除（需确认）
@@ -62,8 +62,8 @@ jc mgr restore backup.zip --merge                 # 已存在 alias 用备份覆
 jc mgr restore backup.zip --replace               # 先自动备份当前 + 清空重建
 
 # 已有工具时的 --install 模式（add 的别名）：注册已有路径/包名为 alias
-jc mgr add py --install "uv tool install sql-harness" --bin sql-harness --alias sh
-jc mgr add npm --install "npm install -g typescript-language-server" --bin typescript-language-server --alias ts-ls
+jc mgr add py --install "uv tool install <pkg>" --bin <exec> --alias <alias>
+jc mgr add npm --install "npm install -g <pkg>" --bin <exec> --alias <alias>
 
 # 已注册 alias 的选择式调用（四种写法等价）
 jc tool                       # 直接执行：等价于 jc mgr run tool
@@ -185,17 +185,18 @@ bb mgr config path
 ```bash
 # 看当前路径 + 来源 + 状态
 jc mgr config path
-# → C:\Users\joke\AppData\Roaming\jc\registry.json
-#   (来源: Windows APPDATA 默认值)
-#   (状态: 已存在，含 5 项)
+# → <APPDATA>\jc\registry.json          # Windows
+# → ~/.config/jc/registry.json         # Linux / macOS
+#   (来源: <平台> 默认值)
+#   (状态: 已存在，含 N 项)
 
 # 自定义位置（持久生效；新 shell 才看得到）
-setx JC_REGISTRY_PATH "D:\dev\my-registry.json"     # Windows
+setx JC_REGISTRY_PATH "D:\path\to\registry.json"   # Windows
 export JC_REGISTRY_PATH="$HOME/.local/jc/registry.json"  # POSIX
 
 # 在自定义位置初始化一个空 registry
-jc mgr config init --dir D:\dev\my-registry
-# → 已初始化: D:\dev\my-registry\registry.json
+jc mgr config init --dir D:\path\to\dir
+# → 已初始化: D:\path\to\dir\registry.json
 #   临时使用: $env:JC_REGISTRY_PATH = "..."; jc ...
 #   永久生效: setx JC_REGISTRY_PATH "..."
 ```
@@ -264,8 +265,8 @@ backup.zip
 很多工具是"装到 PATH 就有"的模式：`uv tool install`、`pip install`、`npm install -g`、`cargo install` 等。`jc mgr install` 把"装 + 注册"压成一行：
 
 ```bash
-jc mgr install --cmd "uv tool install sql-harness"   --bin sql-harness        --alias sh
-jc mgr install --cmd "npm install -g ts-language-server" --bin typescript-language-server --alias ts-ls --kind npm
+jc mgr install --cmd "uv tool install <pkg>"   --bin <exec>        --alias <alias>
+jc mgr install --cmd "npm install -g <pkg>" --bin <exec> --alias <alias> --kind npm
 jc mgr install --cmd "pipx install ruff"            --bin ruff               --alias ruff
 jc mgr install --cmd "cargo install fd-find"        --bin fd                 --alias fd
 ```
@@ -346,6 +347,49 @@ jc mgr export           # 提议 ${REGISTRY_DIR}/exports/registry-{ISO}.json，�
 
 - **Windows**: 全部 98 命令完整支持
 - **macOS / Linux**: 核心命令支持（~80%），注册表/WSL/WiFi密码等 Windows 特有命令会提示"此命令仅支持 Windows"
+
+## 扩展 jc（新增命令）
+
+每个命令由 `src/cli/Command.ts` 的抽象基类派生。开发约定：
+
+```ts
+// src/groups/<group>/<short>.ts
+import { cliText } from '../../../cli/output.js'
+import { Command } from '../../../cli/Command.js'
+
+// 1. executor：原 handler body，不依赖 this（解构/独立引用不会丢 this）
+async function executeXxx(args: string[]): Promise<void> {
+  // ... 业务逻辑
+}
+
+// 2. class：metadata + handler 转调 executor
+export class XxxCommand extends Command {
+  name = 'xxx'
+  description = '...'
+  helpText = `用法:\n  ${this.bin} ...`        // 模板字符串；不是双引号
+  examples = [`${this.bin} xxx ...`]
+  related = [`${this.bin} yyy`]
+
+  async handler(args: string[]): Promise<void> {
+    return executeXxx(args)
+  }
+}
+
+// 3. 单例 + 顶层 handler 适配器（保持测试 `await import(...).then(m => m.handler)` 兼容）
+export const commandDef = new XxxCommand()
+
+export async function handler(args: string[]): Promise<void> {
+  return commandDef.handler(args)
+}
+```
+
+要点：
+
+- **metadata 中的 `jc` 一律用 `${this.bin}`**：模板字符串，反引号。`${this.bin}` 来自基类 `Command` 的 `bin` getter（`src/cli/Command.ts`），返回 `META.binaryName`（`src/shared/meta.ts`，值 `'jc'`）。双引号不会求值，help 会显示字面 `${this.bin}`。
+- **import 必须全部在文件顶部**：迁移脚本会留下 import 在文件中间——避免这种情况。
+- **executor 不要用 `this`**：保持纯函数语义。
+- **`${this.bin}` 在 helpText / examples / related 三个字段里都生效**，由 `output.ts` 的 `cliText()` 运行时替换成当前 CLI 名（用户配的别名如 `bb`）。
+- **完整规范**：参考 `.claude/skills/jc-development/references/routing-and-command-authoring.md`。
 
 ## 构建
 
