@@ -1,19 +1,6 @@
-// src/groups/mgr/cname.ts
-// jc 的"自我改名"——给 CLI 入口起别名（canonical name）。
-//
-// 与 mgr/rename.ts 的区别：
-// - mgr rename 改的是注册表里"已注册工具项"的 alias（用户用 jc tool 还是 jc t）。
-// - cname 改的是 jc 这个**工具自身**的入口名（用户用 jc mgr list 还是 bb mgr list）。
-//
-// 行为：
-// - jc mgr cname                            打印当前 CLI 名 + 来源（env/config/default）
-// - jc mgr cname set <name>                 校验 → 装 launcher → 写 config
-// - jc mgr cname <name>                     当且仅当参数恰好 1 个时等同 set
-// - jc mgr cname reset                      清 config + 卸 launcher
-//
-// 非 TTY 行为：与 TTY 一致（无 prompt）。cname 是 PATH 级持久变更，CI/脚本必须可调用。
-import { existsSync } from 'fs'
+import { Command } from '../../cli/Command.js'
 import { error, success, warning, cliText } from '../../cli/output.js'
+import { existsSync } from 'fs'
 import {
   CLI_NAME_RE,
   DEFAULT_CLI_NAME,
@@ -34,10 +21,27 @@ import {
   uninstallLauncher,
 } from '../../shared/config/launcher.js'
 
-interface ParsedArgs {
-  action: 'get' | 'set' | 'reset'
-  name?: string
-}
+// src/groups/mgr/cname.ts
+// jc 的"自我改名"——给 CLI 入口起别名（canonical name）。
+//
+// 与 mgr/rename.ts 的区别：
+// - mgr rename 改的是注册表里"已注册工具项"的 alias（用户用 jc tool 还是 jc t）。
+// - cname 改的是 jc 这个**工具自身**的入口名（用户用 jc mgr list 还是 bb mgr list）。
+//
+// 行为：
+// - jc mgr cname                            打印当前 CLI 名 + 来源（env/config/default）
+// - jc mgr cname set <name>                 校验 → 装 launcher → 写 config
+// - jc mgr cname <name>                     当且仅当参数恰好 1 个时等同 set
+// - jc mgr cname reset                      清 config + 卸 launcher
+//
+// 非 TTY 行为：与 TTY 一致（无 prompt）。cname 是 PATH 级持久变更，CI/脚本必须可调用。
+
+// 判别联合：每个 action 变体只携带它真正需要的字段。TS 据此自动收窄
+// `name` 的存在性，调用处不再需要 `name!` 非空断言。
+type ParsedArgs =
+  | { action: 'get' }
+  | { action: 'reset' }
+  | { action: 'set'; name: string }
 
 function parseArgs(args: string[]): { ok: true; parsed: ParsedArgs } | { ok: false; reason: string } {
   // 无参数 → get
@@ -49,13 +53,13 @@ function parseArgs(args: string[]): { ok: true; parsed: ParsedArgs } | { ok: fal
   }
   if (args[0] === 'set') {
     if (args.length !== 2) return { ok: false, reason: 'set 用法: jc mgr cname set <name>' }
-    return { ok: true, parsed: { action: 'set', name: args[1] } }
+    return { ok: true, parsed: { action: 'set', name: args[1]! } }
   }
   // 第一个 token 既不是 set 也不是 reset → 把它当作名字（单参简写）
   if (args.length > 1) {
     return { ok: false, reason: '参数过多；用法: jc mgr cname [<name>] | set <name> | reset' }
   }
-  return { ok: true, parsed: { action: 'set', name: args[0] } }
+  return { ok: true, parsed: { action: 'set', name: args[0]! } }
 }
 
 function sourceLabel(s: CliNameSource): string {
@@ -152,7 +156,6 @@ async function actionReset(): Promise<void> {
 
   console.log(success(`已恢复: ${DEFAULT_CLI_NAME}`))
 }
-import { Command } from '../../cli/Command.js'
 
 async function executeCname(args: string[]): Promise<void> {
 
@@ -162,9 +165,9 @@ async function executeCname(args: string[]): Promise<void> {
     console.error(error(r.reason))
     process.exit(1)
   }
-  const { action, name } = r.parsed
+  const { action } = r.parsed
   if (action === 'get') await actionGet()
-  else if (action === 'set') await actionSet(name!)
+  else if (action === 'set') await actionSet(r.parsed.name)   // 判别联合自动收窄：action==='set' 时 name 必存在
   else await actionReset()
 
 }
