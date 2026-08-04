@@ -51,22 +51,37 @@ function printTopLevelHelp(): void {
   console.log(`直接执行已注册 alias: ${getStyledCliName()} ${chalk.yellow('<alias>')} [args...]`)
 }
 
+// `route` is the public entry called from src/index.ts (line 7):
+//   const args = process.argv.slice(2)
+//   await route(args)
+// It strips nothing (slice is done by the caller), then handles the
+// three top-level shortcuts and delegates the rest to `dispatch`.
+//
+// `dispatch` is the internal recursive engine. The three "argv = [...]
+// + return route(argv)" call sites below used to recurse through the
+// public `route`; that worked but reassigned a parameter and conflated
+// the public contract with the internal rewrite step. Pulling them
+// into `dispatch(argv)` makes the data flow explicit: each rewrite
+// produces a new argv that loops back into the same engine.
 export async function route(argv: string[]): Promise<void> {
-  // Shortcut: `jc r <alias> [args...]` is sugar for `jc mgr run <alias> [args...]`.
-  // Resolved at the router boundary so the mgr group's command contract is unchanged.
-  if (argv.length >= 2 && argv[0] === 'r') {
-    argv = ['mgr', 'run', ...argv.slice(1)]
-  }
-
   // Top-level help shortcuts: `jc l` and `jc ?` print the same listing as bare `jc`.
   // Group resolution (below) always wins, so `jc m l` etc. are unaffected.
   if (argv.length === 1 && (argv[0] === 'l' || argv[0] === '?' || argv[0] === 'help')) {
     printTopLevelHelp()
     return
   }
+  return dispatch(argv)
+}
 
-  const parsed = parseArgs(argv)
+// The single recursive dispatch point. `readonly string[]` because
+// `argv` is never mutated; rewrites always allocate a fresh array.
+async function dispatch(argv: readonly string[]): Promise<void> {
+  // Shortcut: `jc r <alias> [args...]` is sugar for `jc mgr run <alias> [args...]`.
+  if (argv.length >= 2 && argv[0] === 'r') {
+    return dispatch(['mgr', 'run', ...argv.slice(1)])
+  }
 
+  const parsed = parseArgs([...argv])
   if (!parsed) {
     printTopLevelHelp()
     return
@@ -78,8 +93,7 @@ export async function route(argv: string[]): Promise<void> {
     // mgr alias. If so, dispatch as `mgr run <alias> [args...]`. Group name (above)
     // always takes precedence, so this fallback only fires for plain `jc <alias>`.
     if (argv.length >= 1 && getItem(parsed.group.toLowerCase())) {
-      argv = ['mgr', 'run', ...argv]
-      return route(argv)
+      return dispatch(['mgr', 'run', ...argv])
     }
     console.error(`错误: 未知命令: ${parsed.group}`)
     process.exit(1)
@@ -133,8 +147,7 @@ export async function route(argv: string[]): Promise<void> {
   // mgr command but is a registered alias, treat the whole argv as `mgr run <rest>`.
   // Only enabled for mgr so other groups keep their strict "未知命令" error contract.
   if (group === mgrGroup && getItem(parsed.command.toLowerCase())) {
-    argv = ['mgr', 'run', parsed.command, ...parsed.args]
-    return route(argv)
+    return dispatch(['mgr', 'run', parsed.command, ...parsed.args])
   }
 
   console.error(`错误: 未知命令: ${parsed.group} ${parsed.command}`)
